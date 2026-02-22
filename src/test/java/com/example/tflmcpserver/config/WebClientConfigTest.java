@@ -2,6 +2,7 @@ package com.example.tflmcpserver.config;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.example.tflmcpserver.model.TflApiProperties;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;

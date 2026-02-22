@@ -4,32 +4,34 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.example.tflmcpserver.model.TflApiProperties;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
-class TflApiPropertiesTest {
+class McpTransportAuthPropertiesTest {
 
     private final Validator validator;
 
-    TflApiPropertiesTest() {
+    McpTransportAuthPropertiesTest() {
         ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
         this.validator = validatorFactory.getValidator();
     }
 
     @Test
     void validPropertiesPassValidation() {
-        TflApiProperties properties = new TflApiProperties("key", "https://api.tfl.gov.uk", 10);
+        McpTransportAuthProperties properties =
+                new McpTransportAuthProperties(true, "X-MCP-API-KEY", "secret", List.of("/mcp"));
 
         assertTrue(validator.validate(properties).isEmpty());
-        assertEquals("key", properties.key());
+        assertEquals("X-MCP-API-KEY", properties.headerName());
     }
 
     @Test
     void invalidPropertiesFailValidation() {
-        TflApiProperties properties = new TflApiProperties("", "", 0);
+        McpTransportAuthProperties properties =
+                new McpTransportAuthProperties(true, "", "", List.of());
 
         assertFalse(validator.validate(properties).isEmpty());
     }

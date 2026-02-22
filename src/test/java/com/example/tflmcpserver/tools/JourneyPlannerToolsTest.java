@@ -5,6 +5,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.example.tflmcpserver.model.JourneyPlanRequest;
+import com.example.tflmcpserver.model.JourneyPlanToolResponse;
 import com.example.tflmcpserver.service.JourneyPlannerService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,12 +24,13 @@ class JourneyPlannerToolsTest {
 
     @Test
     void delegatesToService() {
-        JourneyPlanRequest request = new JourneyPlanRequest("From", "To");
-        when(journeyPlannerService.planJourney(request)).thenReturn("tool-result");
+        JourneyPlanRequest request = new JourneyPlanRequest("From", "To", null);
+        JourneyPlanToolResponse expected = JourneyPlanToolResponse.success("payload");
+        when(journeyPlannerService.planJourney(request)).thenReturn(expected);
 
-        String response = journeyPlannerTools.planJourney(request);
+        JourneyPlanToolResponse response = journeyPlannerTools.planJourney(request);
 
-        assertEquals("tool-result", response);
+        assertEquals(expected, response);
         verify(journeyPlannerService).planJourney(request);
     }
 }

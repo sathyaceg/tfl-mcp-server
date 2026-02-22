@@ -1,12 +1,13 @@
 package com.example.tflmcpserver;
 
-import com.example.tflmcpserver.config.TflApiProperties;
+import com.example.tflmcpserver.config.McpTransportAuthProperties;
+import com.example.tflmcpserver.model.TflApiProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
-@EnableConfigurationProperties(TflApiProperties.class)
+@EnableConfigurationProperties({TflApiProperties.class, McpTransportAuthProperties.class})
 public class TflMcpServerApplication {
     public static void main(String[] args) {
         SpringApplication.run(TflMcpServerApplication.class, args);

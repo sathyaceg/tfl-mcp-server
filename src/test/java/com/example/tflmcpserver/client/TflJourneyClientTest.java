@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.example.tflmcpserver.config.TflApiProperties;
 import com.example.tflmcpserver.model.JourneyPlanRequest;
+import com.example.tflmcpserver.model.TflApiProperties;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -24,7 +24,7 @@ class TflJourneyClientTest {
             WebClient webClient = WebClient.builder().baseUrl(properties.baseUrl()).build();
             TflJourneyClient client = new TflJourneyClient(webClient, properties);
 
-            String response = client.journeyResults(new JourneyPlanRequest("Waterloo", "Victoria"));
+            String response = client.journeyResults(new JourneyPlanRequest("Waterloo", "Victoria", null));
             RecordedRequest recordedRequest = mockWebServer.takeRequest();
 
             assertEquals("{\"ok\":true}", response);
@@ -40,7 +40,7 @@ class TflJourneyClientTest {
         TflJourneyClient client = new TflJourneyClient(webClient, properties);
 
         assertThrows(IllegalArgumentException.class,
-                () -> client.journeyResults(new JourneyPlanRequest(" ", "Victoria")));
+                () -> client.journeyResults(new JourneyPlanRequest(" ", "Victoria", null)));
     }
 
     @Test
@@ -54,7 +54,7 @@ class TflJourneyClientTest {
             TflJourneyClient client = new TflJourneyClient(webClient, properties);
 
             assertThrows(IllegalStateException.class,
-                    () -> client.journeyResults(new JourneyPlanRequest("Waterloo", "Victoria")));
+                    () -> client.journeyResults(new JourneyPlanRequest("Waterloo", "Victoria", null)));
         }
     }
 }

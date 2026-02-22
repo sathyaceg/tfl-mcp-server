@@ -1,4 +1,4 @@
-package com.example.tflmcpserver.config;
+package com.example.tflmcpserver.model;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
