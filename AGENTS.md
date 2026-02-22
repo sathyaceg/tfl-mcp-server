@@ -149,8 +149,10 @@ When modifying code:
 5. Maintain operational guardrails.
 
 If unsure:
-→ modify Service layer, not Controller.
+→ Always, ask.
 
+### Agent Developer Guidelines
+1. Always make sure you're not editing in **main** branch. Agents are forbidden to do any edits in main branch.
 ---
 
 ## Non-Goals
