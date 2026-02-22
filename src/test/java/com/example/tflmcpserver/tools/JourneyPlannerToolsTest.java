@@ -1,42 +1,34 @@
 package com.example.tflmcpserver.tools;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import com.example.tflmcpserver.client.TflJourneyClient;
-import com.example.tflmcpserver.config.TflApiProperties;
+import com.example.tflmcpserver.model.JourneyPlanRequest;
 import com.example.tflmcpserver.service.JourneyPlannerService;
 import org.junit.jupiter.api.Test;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class JourneyPlannerToolsTest {
+
+    @Mock
+    private JourneyPlannerService journeyPlannerService;
+
+    @InjectMocks
+    private JourneyPlannerTools journeyPlannerTools;
 
     @Test
     void delegatesToService() {
-        TrackingJourneyService service = new TrackingJourneyService();
-        JourneyPlannerTools journeyPlannerTools = new JourneyPlannerTools(service);
+        JourneyPlanRequest request = new JourneyPlanRequest("From", "To");
+        when(journeyPlannerService.planJourney(request)).thenReturn("tool-result");
 
-        String response = journeyPlannerTools.planJourney("From", "To");
+        String response = journeyPlannerTools.planJourney(request);
 
         assertEquals("tool-result", response);
-        assertEquals("From", service.capturedFrom);
-        assertEquals("To", service.capturedTo);
-    }
-
-    private static class TrackingJourneyService extends JourneyPlannerService {
-
-        private String capturedFrom;
-        private String capturedTo;
-
-        TrackingJourneyService() {
-            super(new TflJourneyClient(WebClient.builder().build(),
-                    new TflApiProperties("key", "https://api.tfl.gov.uk", 5)));
-        }
-
-        @Override
-        public String planJourney(String from, String to) {
-            this.capturedFrom = from;
-            this.capturedTo = to;
-            return "tool-result";
-        }
+        verify(journeyPlannerService).planJourney(request);
     }
 }

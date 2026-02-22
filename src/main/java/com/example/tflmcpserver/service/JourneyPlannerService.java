@@ -1,6 +1,7 @@
 package com.example.tflmcpserver.service;
 
 import com.example.tflmcpserver.client.TflJourneyClient;
+import com.example.tflmcpserver.model.JourneyPlanRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,7 +13,7 @@ public class JourneyPlannerService {
         this.tflJourneyClient = tflJourneyClient;
     }
 
-    public String planJourney(String from, String to) {
-        return tflJourneyClient.journeyResults(from, to);
+    public String planJourney(JourneyPlanRequest request) {
+        return tflJourneyClient.journeyResults(request);
     }
 }

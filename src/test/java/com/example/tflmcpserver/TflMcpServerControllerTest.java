@@ -4,11 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-class HelloControllerTest {
+class TflMcpServerControllerTest {
 
     @Test
     void helloReturnsExpectedMessage() {
-        HelloController controller = new HelloController();
+        TflMcpServerController controller = new TflMcpServerController();
 
         assertEquals("tfl-mcp-server is running", controller.hello());
     }

@@ -1,6 +1,7 @@
 package com.example.tflmcpserver.client;
 
 import com.example.tflmcpserver.config.TflApiProperties;
+import com.example.tflmcpserver.model.JourneyPlanRequest;
 import java.time.Duration;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -17,8 +18,8 @@ public class TflJourneyClient {
         this.tflApiProperties = tflApiProperties;
     }
 
-    public String journeyResults(String from, String to) {
-        if (!StringUtils.hasText(from) || !StringUtils.hasText(to)) {
+    public String journeyResults(JourneyPlanRequest request) {
+        if (request == null || !StringUtils.hasText(request.from()) || !StringUtils.hasText(request.to())) {
             throw new IllegalArgumentException("Both 'from' and 'to' must be provided.");
         }
 
@@ -26,7 +27,7 @@ public class TflJourneyClient {
                 .uri(uriBuilder -> uriBuilder
                         .path("/Journey/JourneyResults/{from}/to/{to}")
                         .queryParam("app_key", tflApiProperties.key())
-                        .build(from, to))
+                        .build(request.from(), request.to()))
                 .retrieve()
                 .bodyToMono(String.class)
                 .timeout(Duration.ofSeconds(tflApiProperties.timeoutSeconds()))
