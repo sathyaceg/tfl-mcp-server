@@ -2,6 +2,7 @@ package com.example.tflmcpserver.config;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.example.tflmcpserver.model.McpTransportAuthProperties;
 import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.util.List;

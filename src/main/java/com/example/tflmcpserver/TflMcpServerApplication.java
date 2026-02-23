@@ -1,6 +1,6 @@
 package com.example.tflmcpserver;
 
-import com.example.tflmcpserver.config.McpTransportAuthProperties;
+import com.example.tflmcpserver.model.McpTransportAuthProperties;
 import com.example.tflmcpserver.model.TflApiProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

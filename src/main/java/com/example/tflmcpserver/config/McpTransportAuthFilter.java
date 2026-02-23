@@ -1,5 +1,6 @@
 package com.example.tflmcpserver.config;
 
+import com.example.tflmcpserver.model.McpTransportAuthProperties;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

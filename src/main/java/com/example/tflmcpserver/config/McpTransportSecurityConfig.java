@@ -1,6 +1,8 @@
 package com.example.tflmcpserver.config;
 
 import java.util.Set;
+
+import com.example.tflmcpserver.model.McpTransportAuthProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
