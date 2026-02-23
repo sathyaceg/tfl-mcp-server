@@ -11,13 +11,13 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 class TflMcpServerApplicationTest {
 
-    @Test
-    void enablesConfigurationPropertiesBinding() {
-        EnableConfigurationProperties annotation =
-                TflMcpServerApplication.class.getAnnotation(EnableConfigurationProperties.class);
+	@Test
+	void enablesConfigurationPropertiesBinding() {
+		EnableConfigurationProperties annotation = TflMcpServerApplication.class
+				.getAnnotation(EnableConfigurationProperties.class);
 
-        assertNotNull(annotation);
-        assertTrue(Arrays.asList(annotation.value()).contains(TflApiProperties.class));
-        assertTrue(Arrays.asList(annotation.value()).contains(McpTransportAuthProperties.class));
-    }
+		assertNotNull(annotation);
+		assertTrue(Arrays.asList(annotation.value()).contains(TflApiProperties.class));
+		assertTrue(Arrays.asList(annotation.value()).contains(McpTransportAuthProperties.class));
+	}
 }

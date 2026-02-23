@@ -13,27 +13,26 @@ import org.junit.jupiter.api.Test;
 
 class McpTransportAuthPropertiesTest {
 
-    private final Validator validator;
+	private final Validator validator;
 
-    McpTransportAuthPropertiesTest() {
-        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
-        this.validator = validatorFactory.getValidator();
-    }
+	McpTransportAuthPropertiesTest() {
+		ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+		this.validator = validatorFactory.getValidator();
+	}
 
-    @Test
-    void validPropertiesPassValidation() {
-        McpTransportAuthProperties properties =
-                new McpTransportAuthProperties(true, "X-MCP-API-KEY", "secret", List.of("/mcp"));
+	@Test
+	void validPropertiesPassValidation() {
+		McpTransportAuthProperties properties = new McpTransportAuthProperties(true, "X-MCP-API-KEY", "secret",
+				List.of("/mcp"));
 
-        assertTrue(validator.validate(properties).isEmpty());
-        assertEquals("X-MCP-API-KEY", properties.headerName());
-    }
+		assertTrue(validator.validate(properties).isEmpty());
+		assertEquals("X-MCP-API-KEY", properties.headerName());
+	}
 
-    @Test
-    void invalidPropertiesFailValidation() {
-        McpTransportAuthProperties properties =
-                new McpTransportAuthProperties(true, "", "", List.of());
+	@Test
+	void invalidPropertiesFailValidation() {
+		McpTransportAuthProperties properties = new McpTransportAuthProperties(true, "", "", List.of());
 
-        assertFalse(validator.validate(properties).isEmpty());
-    }
+		assertFalse(validator.validate(properties).isEmpty());
+	}
 }

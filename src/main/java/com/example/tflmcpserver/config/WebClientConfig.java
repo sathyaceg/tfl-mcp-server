@@ -8,8 +8,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class WebClientConfig {
 
-    @Bean
-    public WebClient tflWebClient(WebClient.Builder webClientBuilder, TflApiProperties tflApiProperties) {
-        return webClientBuilder.baseUrl(tflApiProperties.baseUrl()).build();
-    }
+	@Bean
+	public WebClient tflWebClient(WebClient.Builder webClientBuilder, TflApiProperties tflApiProperties) {
+		return webClientBuilder.baseUrl(tflApiProperties.baseUrl()).build();
+	}
 }

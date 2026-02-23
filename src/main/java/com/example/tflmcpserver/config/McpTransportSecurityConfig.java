@@ -10,15 +10,15 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class McpTransportSecurityConfig {
 
-    @Bean
-    public FilterRegistrationBean<McpTransportAuthFilter> mcpTransportAuthFilterRegistration(
-            McpTransportAuthProperties authProperties) {
+	@Bean
+	public FilterRegistrationBean<McpTransportAuthFilter> mcpTransportAuthFilterRegistration(
+			McpTransportAuthProperties authProperties) {
 
-        Set<String> protectedPaths = Set.copyOf(authProperties.protectedPaths());
+		Set<String> protectedPaths = Set.copyOf(authProperties.protectedPaths());
 
-        FilterRegistrationBean<McpTransportAuthFilter> registration = new FilterRegistrationBean<>();
-        registration.setFilter(new McpTransportAuthFilter(authProperties, protectedPaths));
-        registration.setOrder(1);
-        return registration;
-    }
+		FilterRegistrationBean<McpTransportAuthFilter> registration = new FilterRegistrationBean<>();
+		registration.setFilter(new McpTransportAuthFilter(authProperties, protectedPaths));
+		registration.setOrder(1);
+		return registration;
+	}
 }

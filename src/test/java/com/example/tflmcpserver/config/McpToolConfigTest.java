@@ -11,15 +11,15 @@ import org.springframework.ai.tool.ToolCallbackProvider;
 
 class McpToolConfigTest {
 
-    @Test
-    void createsToolCallbackProvider() {
-        JourneyPlannerService service = Mockito.mock(JourneyPlannerService.class);
-        JourneyPlannerTools tools = new JourneyPlannerTools(service);
-        McpToolConfig config = new McpToolConfig();
+	@Test
+	void createsToolCallbackProvider() {
+		JourneyPlannerService service = Mockito.mock(JourneyPlannerService.class);
+		JourneyPlannerTools tools = new JourneyPlannerTools(service);
+		McpToolConfig config = new McpToolConfig();
 
-        ToolCallbackProvider provider = config.journeyToolCallbacks(tools);
+		ToolCallbackProvider provider = config.journeyToolCallbacks(tools);
 
-        assertNotNull(provider);
-        assertFalse(provider.getToolCallbacks().length == 0);
-    }
+		assertNotNull(provider);
+		assertFalse(provider.getToolCallbacks().length == 0);
+	}
 }

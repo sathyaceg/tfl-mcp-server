@@ -9,10 +9,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class McpToolConfig {
 
-    @Bean
-    public ToolCallbackProvider journeyToolCallbacks(JourneyPlannerTools journeyPlannerTools) {
-        return MethodToolCallbackProvider.builder()
-                .toolObjects(journeyPlannerTools)
-                .build();
-    }
+	@Bean
+	public ToolCallbackProvider journeyToolCallbacks(JourneyPlannerTools journeyPlannerTools) {
+		return MethodToolCallbackProvider.builder().toolObjects(journeyPlannerTools).build();
+	}
 }

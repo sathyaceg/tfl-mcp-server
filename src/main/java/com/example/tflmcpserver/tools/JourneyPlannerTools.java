@@ -10,15 +10,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class JourneyPlannerTools {
 
-    private final JourneyPlannerService journeyPlannerService;
+	private final JourneyPlannerService journeyPlannerService;
 
-    public JourneyPlannerTools(JourneyPlannerService journeyPlannerService) {
-        this.journeyPlannerService = journeyPlannerService;
-    }
+	public JourneyPlannerTools(JourneyPlannerService journeyPlannerService) {
+		this.journeyPlannerService = journeyPlannerService;
+	}
 
-    @Tool(description = "Plan a journey in London using TfL Journey Planner.")
-    public JourneyPlanToolResponse planJourney(
-            @ToolParam(description = "Journey request with from and to locations") JourneyPlanRequest request) {
-        return journeyPlannerService.planJourney(request);
-    }
+	@Tool(description = "Plan a journey in London using TfL Journey Planner.")
+	public JourneyPlanToolResponse planJourney(
+			@ToolParam(description = "Journey request with from and to locations") JourneyPlanRequest request) {
+		return journeyPlannerService.planJourney(request);
+	}
 }

@@ -16,21 +16,21 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class JourneyPlannerToolsTest {
 
-    @Mock
-    private JourneyPlannerService journeyPlannerService;
+	@Mock
+	private JourneyPlannerService journeyPlannerService;
 
-    @InjectMocks
-    private JourneyPlannerTools journeyPlannerTools;
+	@InjectMocks
+	private JourneyPlannerTools journeyPlannerTools;
 
-    @Test
-    void delegatesToService() {
-        JourneyPlanRequest request = new JourneyPlanRequest("From", "To", null);
-        JourneyPlanToolResponse expected = JourneyPlanToolResponse.success("payload");
-        when(journeyPlannerService.planJourney(request)).thenReturn(expected);
+	@Test
+	void delegatesToService() {
+		JourneyPlanRequest request = new JourneyPlanRequest("From", "To", null);
+		JourneyPlanToolResponse expected = JourneyPlanToolResponse.success("payload");
+		when(journeyPlannerService.planJourney(request)).thenReturn(expected);
 
-        JourneyPlanToolResponse response = journeyPlannerTools.planJourney(request);
+		JourneyPlanToolResponse response = journeyPlannerTools.planJourney(request);
 
-        assertEquals(expected, response);
-        verify(journeyPlannerService).planJourney(request);
-    }
+		assertEquals(expected, response);
+		verify(journeyPlannerService).planJourney(request);
+	}
 }

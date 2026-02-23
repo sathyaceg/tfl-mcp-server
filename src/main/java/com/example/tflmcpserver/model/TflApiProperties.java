@@ -8,8 +8,5 @@ import org.springframework.validation.annotation.Validated;
 
 @Validated
 @ConfigurationProperties(prefix = "tfl.api")
-public record TflApiProperties(
-        @NotBlank String key,
-        @NotBlank String baseUrl,
-        @Min(1) @Max(60) int timeoutSeconds) {
+public record TflApiProperties(@NotBlank String key, @NotBlank String baseUrl, @Min(1) @Max(60) int timeoutSeconds) {
 }

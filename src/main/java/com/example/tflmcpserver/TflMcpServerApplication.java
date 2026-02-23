@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @SpringBootApplication
 @EnableConfigurationProperties({TflApiProperties.class, McpTransportAuthProperties.class})
 public class TflMcpServerApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(TflMcpServerApplication.class, args);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(TflMcpServerApplication.class, args);
+	}
 }

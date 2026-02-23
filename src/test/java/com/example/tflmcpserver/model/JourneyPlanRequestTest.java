@@ -6,12 +6,12 @@ import org.junit.jupiter.api.Test;
 
 class JourneyPlanRequestTest {
 
-    @Test
-    void exposesJourneyRequestValues() {
-        JourneyPlanRequest request = new JourneyPlanRequest("Waterloo", "Victoria", true);
+	@Test
+	void exposesJourneyRequestValues() {
+		JourneyPlanRequest request = new JourneyPlanRequest("Waterloo", "Victoria", true);
 
-        assertEquals("Waterloo", request.from());
-        assertEquals("Victoria", request.to());
-        assertEquals(true, request.needAccessibleRoute());
-    }
+		assertEquals("Waterloo", request.from());
+		assertEquals("Victoria", request.to());
+		assertEquals(true, request.needAccessibleRoute());
+	}
 }

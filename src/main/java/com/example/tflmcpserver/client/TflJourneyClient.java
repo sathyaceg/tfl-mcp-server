@@ -10,28 +10,23 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Component
 public class TflJourneyClient {
 
-    private final WebClient tflWebClient;
-    private final TflApiProperties tflApiProperties;
+	private final WebClient tflWebClient;
+	private final TflApiProperties tflApiProperties;
 
-    public TflJourneyClient(WebClient tflWebClient, TflApiProperties tflApiProperties) {
-        this.tflWebClient = tflWebClient;
-        this.tflApiProperties = tflApiProperties;
-    }
+	public TflJourneyClient(WebClient tflWebClient, TflApiProperties tflApiProperties) {
+		this.tflWebClient = tflWebClient;
+		this.tflApiProperties = tflApiProperties;
+	}
 
-    public String journeyResults(JourneyPlanRequest request) {
-        if (request == null || !StringUtils.hasText(request.from()) || !StringUtils.hasText(request.to())) {
-            throw new IllegalArgumentException("Both 'from' and 'to' must be provided.");
-        }
+	public String journeyResults(JourneyPlanRequest request) {
+		if (request == null || !StringUtils.hasText(request.from()) || !StringUtils.hasText(request.to())) {
+			throw new IllegalArgumentException("Both 'from' and 'to' must be provided.");
+		}
 
-        return tflWebClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/Journey/JourneyResults/{from}/to/{to}")
-                        .queryParam("app_key", tflApiProperties.key())
-                        .build(request.from(), request.to()))
-                .retrieve()
-                .bodyToMono(String.class)
-                .timeout(Duration.ofSeconds(tflApiProperties.timeoutSeconds()))
-                .blockOptional()
-                .orElseThrow(() -> new IllegalStateException("Empty response from TfL Journey API"));
-    }
+		return tflWebClient.get()
+				.uri(uriBuilder -> uriBuilder.path("/Journey/JourneyResults/{from}/to/{to}")
+						.queryParam("app_key", tflApiProperties.key()).build(request.from(), request.to()))
+				.retrieve().bodyToMono(String.class).timeout(Duration.ofSeconds(tflApiProperties.timeoutSeconds()))
+				.blockOptional().orElseThrow(() -> new IllegalStateException("Empty response from TfL Journey API"));
+	}
 }
