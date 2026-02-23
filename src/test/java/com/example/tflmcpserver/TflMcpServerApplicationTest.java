@@ -3,7 +3,7 @@ package com.example.tflmcpserver;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.example.tflmcpserver.config.McpTransportAuthProperties;
+import com.example.tflmcpserver.model.McpTransportAuthProperties;
 import com.example.tflmcpserver.model.TflApiProperties;
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;
