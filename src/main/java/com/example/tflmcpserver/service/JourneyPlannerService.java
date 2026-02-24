@@ -1,10 +1,15 @@
 package com.example.tflmcpserver.service;
 
 import com.example.tflmcpserver.client.TflJourneyClient;
+import com.example.tflmcpserver.model.JourneyOptionSummary;
 import com.example.tflmcpserver.model.JourneyPlanRequest;
 import com.example.tflmcpserver.model.JourneyPlanToolResponse;
 import com.example.tflmcpserver.model.JourneyPlannerErrorCode;
+import com.example.tflmcpserver.model.tfl.TflItineraryResult;
+import com.example.tflmcpserver.model.tfl.TflJourney;
 import io.github.resilience4j.ratelimiter.RateLimiter;
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
@@ -31,11 +36,28 @@ public class JourneyPlannerService {
 			return error(JourneyPlannerErrorCode.RATE_LIMIT_EXCEEDED, RATE_LIMIT_EXCEEDED_MESSAGE);
 		}
 		try {
-			String journeyJson = tflJourneyClient.journeyResults(request);
-			return JourneyPlanToolResponse.success(journeyJson);
+			TflItineraryResult itineraryResult = tflJourneyClient.journeyResults(request);
+			return JourneyPlanToolResponse.success(topFiveFastestJourneys(itineraryResult));
 		} catch (RuntimeException ex) {
 			return toErrorResponse(ex);
 		}
+	}
+
+	private List<JourneyOptionSummary> topFiveFastestJourneys(TflItineraryResult itineraryResult) {
+		if (itineraryResult == null || itineraryResult.getJourneys() == null) {
+			return List.of();
+		}
+		return itineraryResult.getJourneys().stream()
+				.sorted(Comparator.comparingInt(TflJourney::getDuration)
+						.thenComparing(TflJourney::getArrivalDateTime, Comparator.nullsLast(String::compareTo))
+						.thenComparing(TflJourney::getStartDateTime, Comparator.nullsLast(String::compareTo)))
+				.limit(5).map(this::toSummary).toList();
+	}
+
+	private JourneyOptionSummary toSummary(TflJourney journey) {
+		int legCount = journey.getLegs() == null ? 0 : journey.getLegs().size();
+		return new JourneyOptionSummary(journey.getDuration(), journey.getStartDateTime(), journey.getArrivalDateTime(),
+				legCount);
 	}
 
 	private JourneyPlanToolResponse toErrorResponse(RuntimeException ex) {

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.example.tflmcpserver.model.JourneyPlanRequest;
 import com.example.tflmcpserver.model.TflApiProperties;
+import com.example.tflmcpserver.model.tfl.TflItineraryResult;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -15,19 +16,22 @@ import org.springframework.web.reactive.function.client.WebClient;
 class TflJourneyClientTest {
 
 	@Test
-	void returnsResponseBodyForSuccessfulRequest() throws Exception {
+	void returnsTypedResponseForSuccessfulRequest() throws Exception {
 		try (MockWebServer mockWebServer = new MockWebServer()) {
-			mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\"ok\":true}"));
+			mockWebServer.enqueue(
+					new MockResponse().setResponseCode(200).addHeader("Content-Type", "application/json").setBody(
+							"{\"journeys\":[{\"duration\":12,\"startDateTime\":\"2026-02-24T10:00:00\",\"arrivalDateTime\":\"2026-02-24T10:12:00\",\"legs\":[{},{}]}]}"));
 			mockWebServer.start();
 
 			TflApiProperties properties = new TflApiProperties("my-key", mockWebServer.url("/").toString(), 5);
 			WebClient webClient = WebClient.builder().baseUrl(properties.baseUrl()).build();
 			TflJourneyClient client = new TflJourneyClient(webClient, properties);
 
-			String response = client.journeyResults(new JourneyPlanRequest("Waterloo", "Victoria", null));
+			TflItineraryResult response = client.journeyResults(new JourneyPlanRequest("Waterloo", "Victoria", null));
 			RecordedRequest recordedRequest = mockWebServer.takeRequest();
 
-			assertEquals("{\"ok\":true}", response);
+			assertEquals(1, response.getJourneys().size());
+			assertEquals(12, response.getJourneys().get(0).getDuration());
 			assertTrue(recordedRequest.getPath().startsWith("/Journey/JourneyResults/Waterloo/to/Victoria"));
 			assertTrue(recordedRequest.getPath().contains("app_key=my-key"));
 		}

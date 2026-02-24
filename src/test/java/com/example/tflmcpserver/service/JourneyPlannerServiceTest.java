@@ -8,7 +8,10 @@ import com.example.tflmcpserver.client.TflJourneyClient;
 import com.example.tflmcpserver.model.JourneyPlanRequest;
 import com.example.tflmcpserver.model.JourneyPlanToolResponse;
 import com.example.tflmcpserver.model.JourneyPlannerErrorCode;
+import com.example.tflmcpserver.model.tfl.TflItineraryResult;
+import com.example.tflmcpserver.model.tfl.TflJourney;
 import io.github.resilience4j.ratelimiter.RateLimiter;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,16 +37,25 @@ class JourneyPlannerServiceTest {
 	private JourneyPlannerService journeyPlannerService;
 
 	@Test
-	void returnsSuccessResponseWhenClientSucceeds() {
+	void returnsTopFiveFastestJourneysSortedByDuration() {
 		JourneyPlanRequest request = new JourneyPlanRequest("A", "B", null);
 		when(journeyPlannerRateLimiter.acquirePermission()).thenReturn(true);
-		when(tflJourneyClient.journeyResults(request)).thenReturn("{\"journey\":\"ok\"}");
+		when(tflJourneyClient.journeyResults(request)).thenReturn(new TflItineraryResult(
+				List.of(new TflJourney(30, "2026-02-24T10:00:00", "2026-02-24T10:30:00", List.of()),
+						new TflJourney(10, "2026-02-24T10:00:00", "2026-02-24T10:10:00", List.of()),
+						new TflJourney(15, "2026-02-24T10:00:00", "2026-02-24T10:15:00", List.of()),
+						new TflJourney(8, "2026-02-24T10:00:00", "2026-02-24T10:08:00", List.of()),
+						new TflJourney(18, "2026-02-24T10:00:00", "2026-02-24T10:18:00", List.of()),
+						new TflJourney(9, "2026-02-24T10:00:00", "2026-02-24T10:09:00", List.of()))));
 
 		JourneyPlanToolResponse response = journeyPlannerService.planJourney(request);
 
 		assertEquals(true, response.success());
 		assertEquals("OK", response.code());
-		assertEquals("{\"journey\":\"ok\"}", response.journeyJson());
+		assertEquals(5, response.topJourneys().size());
+		assertEquals(8, response.topJourneys().get(0).durationMinutes());
+		assertEquals(9, response.topJourneys().get(1).durationMinutes());
+		assertEquals(10, response.topJourneys().get(2).durationMinutes());
 	}
 
 	@Test

@@ -19,16 +19,16 @@ Fields:
 - `success` (`boolean`): indicates whether tool execution succeeded.
 - `code` (`String`): machine-readable result/error code.
 - `message` (`String`): human-readable result/error summary.
-- `journeyJson` (`String | null`): raw TfL response payload when successful.
+- `topJourneys` (`JourneyOptionSummary[] | null`): top 5 fastest journey options.
 
 ### Success Semantics
 - `success=true`
 - `code=OK`
-- `journeyJson` contains the TfL journey payload.
+- `topJourneys` contains up to 5 journey summaries sorted by fastest duration.
 
 ### Error Semantics
 - `success=false`
-- `journeyJson=null`
+- `topJourneys=null`
 - `code` is one of:
   - `VALIDATION_ERROR`: invalid request input.
   - `RATE_LIMIT_EXCEEDED`: TPS limit exceeded for `planJourney`.
