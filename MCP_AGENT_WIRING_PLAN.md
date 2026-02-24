@@ -31,11 +31,16 @@ Completion note:
 - Added stateless connection examples in `MCP_CONNECTION_GUIDE.md`.
 
 ## Phase 3: Guardrails and Operations
-- `[ ]` Add per-tool rate limiting (TPS)
+- `[x]` Add per-tool rate limiting (TPS)
 - `[ ]` Add concurrency caps
 - `[ ]` Add bounded retries and circuit breaker policies for TfL API
 - `[ ]` Enforce response-size and input safety limits
 - `[ ]` Add structured logs and metrics for tool invocations
+
+Completion note for 3.1:
+- Added Resilience4j rate limiter for `planJourney`.
+- Added rate limiter properties in `application.properties`.
+- Added `RATE_LIMIT_EXCEEDED` tool error mapping when no permit is available.
 
 ## Phase 4: Agent Connector and Runbook
 - `[ ]` Implement a minimal reference agent connector (Java or Python)
@@ -45,7 +50,8 @@ Completion note:
 ## Current Overall Status
 - `Phase 1`: **Complete**
 - `Phase 2`: **Complete**
-- `Phases 3-4`: **Not started**
+- `Phase 3`: **Partially complete (3.1 done)**
+- `Phase 4`: **Not started**
 
 ## Update Policy
 As each task is completed, update this file in the same commit by changing status markers and (if needed) adding a short completion note under that task.

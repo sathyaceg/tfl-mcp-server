@@ -4,6 +4,7 @@ import com.example.tflmcpserver.client.TflJourneyClient;
 import com.example.tflmcpserver.model.JourneyPlanRequest;
 import com.example.tflmcpserver.model.JourneyPlanToolResponse;
 import com.example.tflmcpserver.model.JourneyPlannerErrorCode;
+import io.github.resilience4j.ratelimiter.RateLimiter;
 import java.util.concurrent.TimeoutException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
@@ -15,14 +16,20 @@ public class JourneyPlannerService {
 	private static final String TIMEOUT_MESSAGE = "Timed out while calling TfL API.";
 	private static final String UPSTREAM_REQUEST_FAILED_MESSAGE = "TfL API request failed.";
 	private static final String INTERNAL_ERROR_MESSAGE = "Unexpected error while planning journey.";
+	private static final String RATE_LIMIT_EXCEEDED_MESSAGE = "Rate limit exceeded for planJourney.";
 
 	private final TflJourneyClient tflJourneyClient;
+	private final RateLimiter journeyPlannerRateLimiter;
 
-	public JourneyPlannerService(TflJourneyClient tflJourneyClient) {
+	public JourneyPlannerService(TflJourneyClient tflJourneyClient, RateLimiter journeyPlannerRateLimiter) {
 		this.tflJourneyClient = tflJourneyClient;
+		this.journeyPlannerRateLimiter = journeyPlannerRateLimiter;
 	}
 
 	public JourneyPlanToolResponse planJourney(JourneyPlanRequest request) {
+		if (!journeyPlannerRateLimiter.acquirePermission()) {
+			return error(JourneyPlannerErrorCode.RATE_LIMIT_EXCEEDED, RATE_LIMIT_EXCEEDED_MESSAGE);
+		}
 		try {
 			String journeyJson = tflJourneyClient.journeyResults(request);
 			return JourneyPlanToolResponse.success(journeyJson);

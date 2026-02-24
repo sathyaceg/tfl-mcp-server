@@ -22,6 +22,7 @@
         <mockito.version>5.16.1</mockito.version>
         <byte-buddy.version>1.17.2</byte-buddy.version>
         <spotless.version>2.43.0</spotless.version>
+        <resilience4j.version>2.2.0</resilience4j.version>
     </properties>
 
     <dependencyManagement>
@@ -55,6 +56,12 @@
         <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-mcp-server-webmvc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-ratelimiter</artifactId>
+            <version>${resilience4j.version}</version>
         </dependency>
 
         <dependency>

@@ -31,6 +31,7 @@ Fields:
 - `journeyJson=null`
 - `code` is one of:
   - `VALIDATION_ERROR`: invalid request input.
+  - `RATE_LIMIT_EXCEEDED`: TPS limit exceeded for `planJourney`.
   - `UPSTREAM_TIMEOUT`: timeout while calling TfL API.
   - `UPSTREAM_ERROR`: non-timeout upstream failure (HTTP or request error).
   - `INTERNAL_ERROR`: unexpected internal failure.

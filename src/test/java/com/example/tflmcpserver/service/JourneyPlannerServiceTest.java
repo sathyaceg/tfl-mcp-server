@@ -1,12 +1,14 @@
 package com.example.tflmcpserver.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.example.tflmcpserver.client.TflJourneyClient;
 import com.example.tflmcpserver.model.JourneyPlanRequest;
 import com.example.tflmcpserver.model.JourneyPlanToolResponse;
 import com.example.tflmcpserver.model.JourneyPlannerErrorCode;
+import io.github.resilience4j.ratelimiter.RateLimiter;
 import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,12 +27,16 @@ class JourneyPlannerServiceTest {
 	@Mock
 	private TflJourneyClient tflJourneyClient;
 
+	@Mock
+	private RateLimiter journeyPlannerRateLimiter;
+
 	@InjectMocks
 	private JourneyPlannerService journeyPlannerService;
 
 	@Test
 	void returnsSuccessResponseWhenClientSucceeds() {
 		JourneyPlanRequest request = new JourneyPlanRequest("A", "B", null);
+		when(journeyPlannerRateLimiter.acquirePermission()).thenReturn(true);
 		when(tflJourneyClient.journeyResults(request)).thenReturn("{\"journey\":\"ok\"}");
 
 		JourneyPlanToolResponse response = journeyPlannerService.planJourney(request);
@@ -43,6 +49,7 @@ class JourneyPlannerServiceTest {
 	@Test
 	void mapsValidationErrors() {
 		JourneyPlanRequest request = new JourneyPlanRequest("", "B", null);
+		when(journeyPlannerRateLimiter.acquirePermission()).thenReturn(true);
 		when(tflJourneyClient.journeyResults(request)).thenThrow(new IllegalArgumentException("invalid input"));
 
 		JourneyPlanToolResponse response = journeyPlannerService.planJourney(request);
@@ -55,6 +62,7 @@ class JourneyPlannerServiceTest {
 	@Test
 	void mapsUpstreamHttpErrors() {
 		JourneyPlanRequest request = new JourneyPlanRequest("A", "B", null);
+		when(journeyPlannerRateLimiter.acquirePermission()).thenReturn(true);
 		WebClientResponseException exception = WebClientResponseException.create(HttpStatus.BAD_GATEWAY.value(),
 				"Bad Gateway", null, new byte[0], null);
 		when(tflJourneyClient.journeyResults(request)).thenThrow(exception);
@@ -68,6 +76,7 @@ class JourneyPlannerServiceTest {
 	@Test
 	void mapsTimeoutsFromRequestExceptions() {
 		JourneyPlanRequest request = new JourneyPlanRequest("A", "B", null);
+		when(journeyPlannerRateLimiter.acquirePermission()).thenReturn(true);
 		WebClientRequestException exception = new WebClientRequestException(new TimeoutException("timeout"),
 				HttpMethod.GET, java.net.URI.create("https://api.tfl.gov.uk/Journey/JourneyResults/A/to/B"),
 				HttpHeaders.EMPTY);
@@ -82,11 +91,24 @@ class JourneyPlannerServiceTest {
 	@Test
 	void mapsUnexpectedErrors() {
 		JourneyPlanRequest request = new JourneyPlanRequest("A", "B", null);
+		when(journeyPlannerRateLimiter.acquirePermission()).thenReturn(true);
 		when(tflJourneyClient.journeyResults(request)).thenThrow(new RuntimeException("boom"));
 
 		JourneyPlanToolResponse response = journeyPlannerService.planJourney(request);
 
 		assertEquals(false, response.success());
 		assertEquals(JourneyPlannerErrorCode.INTERNAL_ERROR.name(), response.code());
+	}
+
+	@Test
+	void returnsRateLimitErrorWhenNoPermission() {
+		JourneyPlanRequest request = new JourneyPlanRequest("A", "B", null);
+		when(journeyPlannerRateLimiter.acquirePermission()).thenReturn(false);
+
+		JourneyPlanToolResponse response = journeyPlannerService.planJourney(request);
+
+		assertEquals(false, response.success());
+		assertEquals(JourneyPlannerErrorCode.RATE_LIMIT_EXCEEDED.name(), response.code());
+		verifyNoInteractions(tflJourneyClient);
 	}
 }
