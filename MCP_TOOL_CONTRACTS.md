@@ -20,6 +20,7 @@ Fields:
 - `code` (`String`): machine-readable result/error code.
 - `message` (`String`): human-readable result/error summary.
 - `topJourneys` (`JourneyOptionSummary[] | null`): top 5 fastest journey options.
+- `disambiguationOptions` (`JourneyDisambiguationSuggestion[] | null`): top disambiguation suggestions when input is ambiguous.
 
 ### Success Semantics
 - `success=true`
@@ -29,8 +30,10 @@ Fields:
 ### Error Semantics
 - `success=false`
 - `topJourneys=null`
+- `disambiguationOptions` is populated when `code=DISAMBIGUATION_REQUIRED`.
 - `code` is one of:
   - `VALIDATION_ERROR`: invalid request input.
+  - `DISAMBIGUATION_REQUIRED`: TfL could not uniquely resolve `from` or `to`; use one of returned `parameterValue` values and retry.
   - `RATE_LIMIT_EXCEEDED`: TPS limit exceeded for `planJourney`.
   - `UPSTREAM_TIMEOUT`: timeout while calling TfL API.
   - `UPSTREAM_ERROR`: non-timeout upstream failure (HTTP or request error).

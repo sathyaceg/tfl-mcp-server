@@ -8,6 +8,8 @@ import com.example.tflmcpserver.client.TflJourneyClient;
 import com.example.tflmcpserver.model.JourneyPlanRequest;
 import com.example.tflmcpserver.model.JourneyPlanToolResponse;
 import com.example.tflmcpserver.model.JourneyPlannerErrorCode;
+import com.example.tflmcpserver.model.tfl.TflDisambiguation;
+import com.example.tflmcpserver.model.tfl.TflDisambiguationOption;
 import com.example.tflmcpserver.model.tfl.TflItineraryResult;
 import com.example.tflmcpserver.model.tfl.TflJourney;
 import io.github.resilience4j.ratelimiter.RateLimiter;
@@ -56,6 +58,24 @@ class JourneyPlannerServiceTest {
 		assertEquals(8, response.topJourneys().get(0).durationMinutes());
 		assertEquals(9, response.topJourneys().get(1).durationMinutes());
 		assertEquals(10, response.topJourneys().get(2).durationMinutes());
+	}
+
+	@Test
+	void returnsDisambiguationRequiredWithTopSuggestions() {
+		JourneyPlanRequest request = new JourneyPlanRequest("Liverpool Street", "Foo", null);
+		when(journeyPlannerRateLimiter.acquirePermission()).thenReturn(true);
+		TflItineraryResult disambiguationResult = new TflItineraryResult();
+		disambiguationResult.setToLocationDisambiguation(
+				new TflDisambiguation(List.of(new TflDisambiguationOption("51.545335,-0.008048", "/uri1"),
+						new TflDisambiguationOption("51.520000,-0.010000", "/uri2"))));
+		when(tflJourneyClient.journeyResults(request)).thenReturn(disambiguationResult);
+
+		JourneyPlanToolResponse response = journeyPlannerService.planJourney(request);
+
+		assertEquals(false, response.success());
+		assertEquals(JourneyPlannerErrorCode.DISAMBIGUATION_REQUIRED.name(), response.code());
+		assertEquals(2, response.disambiguationOptions().size());
+		assertEquals("51.545335,-0.008048", response.disambiguationOptions().get(0).parameterValue());
 	}
 
 	@Test

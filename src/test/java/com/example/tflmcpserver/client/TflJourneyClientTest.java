@@ -38,6 +38,28 @@ class TflJourneyClientTest {
 	}
 
 	@Test
+	void parsesDisambiguationResponses() throws Exception {
+		try (MockWebServer mockWebServer = new MockWebServer()) {
+			mockWebServer.enqueue(
+					new MockResponse().setResponseCode(200).addHeader("Content-Type", "application/json").setBody(
+							"{\"$type\":\"Tfl.Api.Presentation.Entities.JourneyPlanner.DisambiguationResult, Tfl.Api.Presentation.Entities\",\"toLocationDisambiguation\":{\"disambiguationOptions\":[{\"parameterValue\":\"51.545335,-0.008048\",\"uri\":\"/journey/journeyresults/liverpool%20street/to/51.545335,-0.008048\"}]}}"));
+			mockWebServer.start();
+
+			TflApiProperties properties = new TflApiProperties("my-key", mockWebServer.url("/").toString(), 5);
+			WebClient webClient = WebClient.builder().baseUrl(properties.baseUrl()).build();
+			TflJourneyClient client = new TflJourneyClient(webClient, properties);
+
+			TflItineraryResult response = client
+					.journeyResults(new JourneyPlanRequest("Liverpool Street", "Foo", null));
+
+			assertEquals(
+					"Tfl.Api.Presentation.Entities.JourneyPlanner.DisambiguationResult, Tfl.Api.Presentation.Entities",
+					response.getType());
+			assertEquals(1, response.getToLocationDisambiguation().getDisambiguationOptions().size());
+		}
+	}
+
+	@Test
 	void rejectsBlankInput() {
 		TflApiProperties properties = new TflApiProperties("my-key", "https://api.tfl.gov.uk", 5);
 		WebClient webClient = WebClient.builder().baseUrl(properties.baseUrl()).build();
