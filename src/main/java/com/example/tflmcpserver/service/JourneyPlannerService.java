@@ -10,7 +10,6 @@ import com.example.tflmcpserver.model.tfl.TflDisambiguationOption;
 import com.example.tflmcpserver.model.tfl.TflItineraryResult;
 import com.example.tflmcpserver.model.tfl.TflJourney;
 import io.github.resilience4j.ratelimiter.RateLimiter;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -44,12 +43,19 @@ public class JourneyPlannerService {
 		}
 		try {
 			TflItineraryResult itineraryResult = tflJourneyClient.journeyResults(request);
-			List<JourneyDisambiguationSuggestion> disambiguationSuggestions = topDisambiguationSuggestions(
-					itineraryResult);
-			if (!disambiguationSuggestions.isEmpty()) {
-				logger.info("Journey planning requires disambiguation with {} option(s)",
-						disambiguationSuggestions.size());
-				return JourneyPlanToolResponse.disambiguationRequired(disambiguationSuggestions);
+			List<JourneyDisambiguationSuggestion> fromLocationDisambiguation = buildSuggestions(
+					itineraryResult.getFromLocationDisambiguation() == null
+							? null
+							: itineraryResult.getFromLocationDisambiguation().getDisambiguationOptions());
+			List<JourneyDisambiguationSuggestion> toLocationDisambiguation = buildSuggestions(
+					itineraryResult.getToLocationDisambiguation() == null
+							? null
+							: itineraryResult.getToLocationDisambiguation().getDisambiguationOptions());
+			if (!fromLocationDisambiguation.isEmpty() || !toLocationDisambiguation.isEmpty()) {
+				logger.info("Journey planning requires disambiguation (fromOptions={}, toOptions={})",
+						fromLocationDisambiguation.size(), toLocationDisambiguation.size());
+				return JourneyPlanToolResponse.disambiguationRequired(fromLocationDisambiguation,
+						toLocationDisambiguation);
 			}
 			List<JourneyOptionSummary> topJourneys = topFiveFastestJourneys(itineraryResult);
 			logger.info("Journey planning succeeded with {} option(s)", topJourneys.size());
@@ -59,32 +65,17 @@ public class JourneyPlannerService {
 		}
 	}
 
-	private List<JourneyDisambiguationSuggestion> topDisambiguationSuggestions(TflItineraryResult itineraryResult) {
-		if (itineraryResult == null) {
+	private List<JourneyDisambiguationSuggestion> buildSuggestions(List<TflDisambiguationOption> options) {
+		if (options == null) {
 			return List.of();
 		}
-
-		List<JourneyDisambiguationSuggestion> suggestions = new ArrayList<>();
-		addSuggestions(suggestions, "from",
-				itineraryResult.getFromLocationDisambiguation() == null
-						? null
-						: itineraryResult.getFromLocationDisambiguation().getDisambiguationOptions());
-		addSuggestions(suggestions, "to",
-				itineraryResult.getToLocationDisambiguation() == null
-						? null
-						: itineraryResult.getToLocationDisambiguation().getDisambiguationOptions());
-
-		return suggestions.stream().limit(5).toList();
-	}
-
-	private void addSuggestions(List<JourneyDisambiguationSuggestion> target, String source,
-			List<TflDisambiguationOption> options) {
-		if (options == null) {
-			return;
-		}
-		options.stream().filter(option -> option.getParameterValue() != null && !option.getParameterValue().isBlank())
-				.map(option -> new JourneyDisambiguationSuggestion(source, option.getParameterValue()))
-				.forEach(target::add);
+		return options.stream()
+				.filter(option -> option.getParameterValue() != null && !option.getParameterValue().isBlank())
+				.sorted(Comparator.comparing(TflDisambiguationOption::getMatchQuality,
+						Comparator.nullsLast(Comparator.reverseOrder())))
+				.map(option -> new JourneyDisambiguationSuggestion(option.getParameterValue(),
+						option.getMatchQuality()))
+				.limit(5).toList();
 	}
 
 	private List<JourneyOptionSummary> topFiveFastestJourneys(TflItineraryResult itineraryResult) {

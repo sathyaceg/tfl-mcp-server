@@ -20,7 +20,8 @@ Fields:
 - `code` (`String`): machine-readable result/error code.
 - `message` (`String`): human-readable result/error summary.
 - `topJourneys` (`JourneyOptionSummary[] | null`): top 5 fastest journey options.
-- `disambiguationOptions` (`JourneyDisambiguationSuggestion[] | null`): top disambiguation suggestions when input is ambiguous.
+- `fromLocationDisambiguation` (`JourneyDisambiguationSuggestion[] | null`): top disambiguation suggestions for `from`.
+- `toLocationDisambiguation` (`JourneyDisambiguationSuggestion[] | null`): top disambiguation suggestions for `to`.
 
 ### Success Semantics
 - `success=true`
@@ -30,7 +31,7 @@ Fields:
 ### Error Semantics
 - `success=false`
 - `topJourneys=null`
-- `disambiguationOptions` is populated when `code=DISAMBIGUATION_REQUIRED`.
+- `fromLocationDisambiguation` / `toLocationDisambiguation` are populated when `code=DISAMBIGUATION_REQUIRED`.
 - `code` is one of:
   - `VALIDATION_ERROR`: invalid request input.
   - `DISAMBIGUATION_REQUIRED`: TfL could not uniquely resolve `from` or `to`; use one of returned `parameterValue` values and retry.
@@ -42,3 +43,5 @@ Fields:
 ## Notes
 - `TFL_API_KEY` is required at startup and must be provided via environment variable.
 - Secrets are never returned in tool response payloads.
+- `JourneyDisambiguationSuggestion` includes `parameterValue` (retry token) and `matchQuality`.
+- Disambiguation suggestions are sorted by `matchQuality` descending when provided by TfL.

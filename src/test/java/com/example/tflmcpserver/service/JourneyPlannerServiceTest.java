@@ -66,16 +66,20 @@ class JourneyPlannerServiceTest {
 		when(journeyPlannerRateLimiter.acquirePermission()).thenReturn(true);
 		TflItineraryResult disambiguationResult = new TflItineraryResult();
 		disambiguationResult.setToLocationDisambiguation(
-				new TflDisambiguation(List.of(new TflDisambiguationOption("51.545335,-0.008048", "/uri1"),
-						new TflDisambiguationOption("51.520000,-0.010000", "/uri2"))));
+				new TflDisambiguation(List.of(new TflDisambiguationOption(80, "51.545335,-0.008048", "/uri1"),
+						new TflDisambiguationOption(95, "51.520000,-0.010000", "/uri2"))));
 		when(tflJourneyClient.journeyResults(request)).thenReturn(disambiguationResult);
 
 		JourneyPlanToolResponse response = journeyPlannerService.planJourney(request);
 
 		assertEquals(false, response.success());
 		assertEquals(JourneyPlannerErrorCode.DISAMBIGUATION_REQUIRED.name(), response.code());
-		assertEquals(2, response.disambiguationOptions().size());
-		assertEquals("51.545335,-0.008048", response.disambiguationOptions().get(0).parameterValue());
+		assertEquals(0, response.fromLocationDisambiguation().size());
+		assertEquals(2, response.toLocationDisambiguation().size());
+		assertEquals("51.520000,-0.010000", response.toLocationDisambiguation().get(0).parameterValue());
+		assertEquals(95, response.toLocationDisambiguation().get(0).matchQuality());
+		assertEquals("51.545335,-0.008048", response.toLocationDisambiguation().get(1).parameterValue());
+		assertEquals(80, response.toLocationDisambiguation().get(1).matchQuality());
 	}
 
 	@Test
