@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.example.tflmcpserver.model.McpTransportAuthProperties;
+import com.example.tflmcpserver.model.StationToiletRateLimiterProperties;
+import com.example.tflmcpserver.model.TflStationDataProperties;
 import com.example.tflmcpserver.model.TflApiProperties;
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;
@@ -19,5 +21,7 @@ class TflMcpServerApplicationTest {
 		assertNotNull(annotation);
 		assertTrue(Arrays.asList(annotation.value()).contains(TflApiProperties.class));
 		assertTrue(Arrays.asList(annotation.value()).contains(McpTransportAuthProperties.class));
+		assertTrue(Arrays.asList(annotation.value()).contains(TflStationDataProperties.class));
+		assertTrue(Arrays.asList(annotation.value()).contains(StationToiletRateLimiterProperties.class));
 	}
 }
