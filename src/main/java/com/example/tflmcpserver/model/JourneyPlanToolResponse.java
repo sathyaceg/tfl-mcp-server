@@ -4,12 +4,12 @@ import jakarta.annotation.Nullable;
 import java.util.List;
 
 public record JourneyPlanToolResponse(boolean success, String code, String message,
-		@Nullable List<JourneyOptionSummary> topJourneys,
+		@Nullable List<JourneyOptionDetail> topJourneyDetails,
 		@Nullable List<JourneyDisambiguationSuggestion> fromLocationDisambiguation,
 		@Nullable List<JourneyDisambiguationSuggestion> toLocationDisambiguation) {
 
-	public static JourneyPlanToolResponse success(List<JourneyOptionSummary> topJourneys) {
-		return new JourneyPlanToolResponse(true, "OK", "Journey plan retrieved.", topJourneys, null, null);
+	public static JourneyPlanToolResponse success(List<JourneyOptionDetail> topJourneyDetails) {
+		return new JourneyPlanToolResponse(true, "OK", "Journey plan retrieved.", topJourneyDetails, null, null);
 	}
 
 	public static JourneyPlanToolResponse disambiguationRequired(

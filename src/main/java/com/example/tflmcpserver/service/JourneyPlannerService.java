@@ -2,13 +2,19 @@ package com.example.tflmcpserver.service;
 
 import com.example.tflmcpserver.client.TflJourneyClient;
 import com.example.tflmcpserver.model.JourneyDisambiguationSuggestion;
-import com.example.tflmcpserver.model.JourneyOptionSummary;
+import com.example.tflmcpserver.model.JourneyLegDetail;
+import com.example.tflmcpserver.model.JourneyOptionDetail;
 import com.example.tflmcpserver.model.JourneyPlanRequest;
 import com.example.tflmcpserver.model.JourneyPlanToolResponse;
 import com.example.tflmcpserver.model.JourneyPlannerErrorCode;
 import com.example.tflmcpserver.model.tfl.TflDisambiguationOption;
+import com.example.tflmcpserver.model.tfl.TflDisruption;
+import com.example.tflmcpserver.model.tfl.TflIdentifier;
 import com.example.tflmcpserver.model.tfl.TflItineraryResult;
 import com.example.tflmcpserver.model.tfl.TflJourney;
+import com.example.tflmcpserver.model.tfl.TflJourneyLeg;
+import com.example.tflmcpserver.model.tfl.TflPlannedWork;
+import com.example.tflmcpserver.model.tfl.TflRouteOption;
 import io.github.resilience4j.ratelimiter.RateLimiter;
 import java.util.Comparator;
 import java.util.List;
@@ -57,9 +63,9 @@ public class JourneyPlannerService {
 				return JourneyPlanToolResponse.disambiguationRequired(fromLocationDisambiguation,
 						toLocationDisambiguation);
 			}
-			List<JourneyOptionSummary> topJourneys = topFiveFastestJourneys(itineraryResult);
-			logger.info("Journey planning succeeded with {} option(s)", topJourneys.size());
-			return JourneyPlanToolResponse.success(topJourneys);
+			List<JourneyOptionDetail> topJourneyDetails = topFiveFastestJourneys(itineraryResult);
+			logger.info("Journey planning succeeded with {} option(s)", topJourneyDetails.size());
+			return JourneyPlanToolResponse.success(topJourneyDetails);
 		} catch (RuntimeException ex) {
 			return toErrorResponse(ex);
 		}
@@ -78,7 +84,7 @@ public class JourneyPlannerService {
 				.limit(5).toList();
 	}
 
-	private List<JourneyOptionSummary> topFiveFastestJourneys(TflItineraryResult itineraryResult) {
+	private List<JourneyOptionDetail> topFiveFastestJourneys(TflItineraryResult itineraryResult) {
 		if (itineraryResult == null || itineraryResult.getJourneys() == null) {
 			return List.of();
 		}
@@ -86,13 +92,68 @@ public class JourneyPlannerService {
 				.sorted(Comparator.comparingInt(TflJourney::getDuration)
 						.thenComparing(TflJourney::getArrivalDateTime, Comparator.nullsLast(String::compareTo))
 						.thenComparing(TflJourney::getStartDateTime, Comparator.nullsLast(String::compareTo)))
-				.limit(5).map(this::toSummary).toList();
+				.limit(5).map(this::toDetail).toList();
 	}
 
-	private JourneyOptionSummary toSummary(TflJourney journey) {
-		int legCount = journey.getLegs() == null ? 0 : journey.getLegs().size();
-		return new JourneyOptionSummary(journey.getDuration(), journey.getStartDateTime(), journey.getArrivalDateTime(),
-				legCount);
+	private JourneyOptionDetail toDetail(TflJourney journey) {
+		List<JourneyLegDetail> legDetails = journey.getLegs() == null
+				? List.of()
+				: journey.getLegs().stream().map(this::toLegDetail).toList();
+		int legCount = legDetails.size();
+		Integer totalFarePence = journey.getFare() == null ? null : journey.getFare().getTotalCost();
+		return new JourneyOptionDetail(journey.getDuration(), journey.getStartDateTime(), journey.getArrivalDateTime(),
+				legCount, journey.getDescription(), journey.isAlternativeRoute(), totalFarePence, legDetails);
+	}
+
+	private JourneyLegDetail toLegDetail(TflJourneyLeg leg) {
+		String instructionSummary = leg.getInstruction() == null ? null : leg.getInstruction().getSummary();
+		String instructionDetailed = leg.getInstruction() == null ? null : leg.getInstruction().getDetailed();
+		String modeId = leg.getMode() == null ? null : leg.getMode().getId();
+		String modeName = leg.getMode() == null ? null : leg.getMode().getName();
+
+		String routeName = null;
+		String direction = null;
+		if (leg.getRouteOptions() != null && !leg.getRouteOptions().isEmpty()) {
+			TflRouteOption primaryRouteOption = leg.getRouteOptions().get(0);
+			routeName = primaryRouteOption.getLineIdentifier() != null
+					&& primaryRouteOption.getLineIdentifier().getName() != null
+							? primaryRouteOption.getLineIdentifier().getName()
+							: primaryRouteOption.getName();
+			direction = primaryRouteOption.getDirection();
+		}
+
+		List<String> disruptionSummaries = leg.getDisruptions() == null
+				? List.of()
+				: leg.getDisruptions().stream().map(this::disruptionSummary)
+						.filter(text -> text != null && !text.isBlank()).toList();
+
+		List<String> plannedWorkDescriptions = leg.getPlannedWorks() == null
+				? List.of()
+				: leg.getPlannedWorks().stream().map(TflPlannedWork::getDescription)
+						.filter(text -> text != null && !text.isBlank()).toList();
+
+		List<String> stopPoints = (leg.getPath() == null || leg.getPath().getStopPoints() == null)
+				? List.of()
+				: leg.getPath().getStopPoints().stream()
+						.map(stopPoint -> stopPoint.getName() != null && !stopPoint.getName().isBlank()
+								? stopPoint.getName()
+								: stopPoint.getId())
+						.filter(text -> text != null && !text.isBlank()).toList();
+
+		return new JourneyLegDetail(leg.getDuration(), leg.getDepartureTime(), leg.getArrivalTime(), leg.getDistance(),
+				instructionSummary, instructionDetailed, modeId, modeName, routeName, direction,
+				leg.getInterChangeDuration(), leg.getInterChangePosition(), leg.isDisrupted(), disruptionSummaries,
+				plannedWorkDescriptions, stopPoints);
+	}
+
+	private String disruptionSummary(TflDisruption disruption) {
+		if (disruption == null) {
+			return null;
+		}
+		if (disruption.getSummary() != null && !disruption.getSummary().isBlank()) {
+			return disruption.getSummary();
+		}
+		return disruption.getDescription();
 	}
 
 	private JourneyPlanToolResponse toErrorResponse(RuntimeException ex) {
