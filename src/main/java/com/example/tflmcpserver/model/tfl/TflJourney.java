@@ -9,6 +9,9 @@ public class TflJourney {
 	private int duration;
 	private String startDateTime;
 	private String arrivalDateTime;
+	private String description;
+	private boolean alternativeRoute;
+	private TflJourneyFare fare;
 	private List<TflJourneyLeg> legs;
 
 	public TflJourney() {
@@ -43,6 +46,30 @@ public class TflJourney {
 
 	public void setArrivalDateTime(String arrivalDateTime) {
 		this.arrivalDateTime = arrivalDateTime;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public boolean isAlternativeRoute() {
+		return alternativeRoute;
+	}
+
+	public void setAlternativeRoute(boolean alternativeRoute) {
+		this.alternativeRoute = alternativeRoute;
+	}
+
+	public TflJourneyFare getFare() {
+		return fare;
+	}
+
+	public void setFare(TflJourneyFare fare) {
+		this.fare = fare;
 	}
 
 	public List<TflJourneyLeg> getLegs() {
