@@ -4,9 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.example.tflmcpserver.model.JourneyOptionDetail;
-import com.example.tflmcpserver.model.JourneyPlanRequest;
-import com.example.tflmcpserver.model.JourneyPlanToolResponse;
+import com.example.tflmcpserver.model.api.journey.JourneyOptionDetail;
+import com.example.tflmcpserver.model.api.journey.JourneyPlanRequest;
+import com.example.tflmcpserver.model.api.journey.JourneyPlanToolResponse;
 import com.example.tflmcpserver.service.JourneyPlannerService;
 import java.util.List;
 import org.junit.jupiter.api.Test;

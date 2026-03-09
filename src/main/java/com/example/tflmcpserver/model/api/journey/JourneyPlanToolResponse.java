@@ -1,5 +1,6 @@
-package com.example.tflmcpserver.model;
+package com.example.tflmcpserver.model.api.journey;
 
+import com.example.tflmcpserver.model.JourneyPlannerErrorCode;
 import jakarta.annotation.Nullable;
 import java.util.List;
 

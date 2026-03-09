@@ -1,7 +1,7 @@
 package com.example.tflmcpserver.tools;
 
-import com.example.tflmcpserver.model.JourneyPlanRequest;
-import com.example.tflmcpserver.model.JourneyPlanToolResponse;
+import com.example.tflmcpserver.model.api.journey.JourneyPlanRequest;
+import com.example.tflmcpserver.model.api.journey.JourneyPlanToolResponse;
 import com.example.tflmcpserver.service.JourneyPlannerService;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;

@@ -4,9 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.example.tflmcpserver.model.JourneyPlanRequest;
+import com.example.tflmcpserver.model.api.journey.JourneyPlanRequest;
 import com.example.tflmcpserver.model.TflApiProperties;
-import com.example.tflmcpserver.model.tfl.TflItineraryResult;
+import com.example.tflmcpserver.model.tfl.journey.TflItineraryResult;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;

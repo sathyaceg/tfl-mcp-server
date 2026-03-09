@@ -1,12 +1,12 @@
-package com.example.tflmcpserver.model.tfl;
+package com.example.tflmcpserver.model.tfl.journey;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TflDisruption {
+public class TflInstruction {
 
 	private String summary;
-	private String description;
+	private String detailed;
 
 	public String getSummary() {
 		return summary;
@@ -16,11 +16,11 @@ public class TflDisruption {
 		this.summary = summary;
 	}
 
-	public String getDescription() {
-		return description;
+	public String getDetailed() {
+		return detailed;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setDetailed(String detailed) {
+		this.detailed = detailed;
 	}
 }

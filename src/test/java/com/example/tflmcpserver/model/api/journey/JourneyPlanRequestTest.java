@@ -1,4 +1,4 @@
-package com.example.tflmcpserver.model;
+package com.example.tflmcpserver.model.api.journey;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
