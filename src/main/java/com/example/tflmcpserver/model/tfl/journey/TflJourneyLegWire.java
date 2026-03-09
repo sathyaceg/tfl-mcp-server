@@ -5,22 +5,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TflJourneyLeg {
+public class TflJourneyLegWire {
 
 	private int duration;
 	private String departureTime;
 	private String arrivalTime;
 	private Double distance;
-	private TflInstruction instruction;
-	private TflIdentifier mode;
-	private List<TflRouteOption> routeOptions;
+	private TflInstructionWire instruction;
+	private TflIdentifierWire mode;
+	private List<TflRouteOptionWire> routeOptions;
 	private String interChangeDuration;
 	private String interChangePosition;
 	@JsonProperty("isDisrupted")
 	private boolean isDisrupted;
-	private List<TflDisruption> disruptions;
-	private List<TflPlannedWork> plannedWorks;
-	private TflPath path;
+	private List<TflDisruptionWire> disruptions;
+	private List<TflPlannedWorkWire> plannedWorks;
+	private TflPathWire path;
 
 	public int getDuration() {
 		return duration;
@@ -54,27 +54,27 @@ public class TflJourneyLeg {
 		this.distance = distance;
 	}
 
-	public TflInstruction getInstruction() {
+	public TflInstructionWire getInstruction() {
 		return instruction;
 	}
 
-	public void setInstruction(TflInstruction instruction) {
+	public void setInstruction(TflInstructionWire instruction) {
 		this.instruction = instruction;
 	}
 
-	public TflIdentifier getMode() {
+	public TflIdentifierWire getMode() {
 		return mode;
 	}
 
-	public void setMode(TflIdentifier mode) {
+	public void setMode(TflIdentifierWire mode) {
 		this.mode = mode;
 	}
 
-	public List<TflRouteOption> getRouteOptions() {
+	public List<TflRouteOptionWire> getRouteOptions() {
 		return routeOptions;
 	}
 
-	public void setRouteOptions(List<TflRouteOption> routeOptions) {
+	public void setRouteOptions(List<TflRouteOptionWire> routeOptions) {
 		this.routeOptions = routeOptions;
 	}
 
@@ -102,27 +102,27 @@ public class TflJourneyLeg {
 		isDisrupted = disrupted;
 	}
 
-	public List<TflDisruption> getDisruptions() {
+	public List<TflDisruptionWire> getDisruptions() {
 		return disruptions;
 	}
 
-	public void setDisruptions(List<TflDisruption> disruptions) {
+	public void setDisruptions(List<TflDisruptionWire> disruptions) {
 		this.disruptions = disruptions;
 	}
 
-	public List<TflPlannedWork> getPlannedWorks() {
+	public List<TflPlannedWorkWire> getPlannedWorks() {
 		return plannedWorks;
 	}
 
-	public void setPlannedWorks(List<TflPlannedWork> plannedWorks) {
+	public void setPlannedWorks(List<TflPlannedWorkWire> plannedWorks) {
 		this.plannedWorks = plannedWorks;
 	}
 
-	public TflPath getPath() {
+	public TflPathWire getPath() {
 		return path;
 	}
 
-	public void setPath(TflPath path) {
+	public void setPath(TflPathWire path) {
 		this.path = path;
 	}
 }

@@ -3,11 +3,11 @@ package com.example.tflmcpserver.model.tfl.journey;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TflRouteOption {
+public class TflRouteOptionWire {
 
 	private String name;
 	private String direction;
-	private TflIdentifier lineIdentifier;
+	private TflIdentifierWire lineIdentifier;
 
 	public String getName() {
 		return name;
@@ -25,11 +25,11 @@ public class TflRouteOption {
 		this.direction = direction;
 	}
 
-	public TflIdentifier getLineIdentifier() {
+	public TflIdentifierWire getLineIdentifier() {
 		return lineIdentifier;
 	}
 
-	public void setLineIdentifier(TflIdentifier lineIdentifier) {
+	public void setLineIdentifier(TflIdentifierWire lineIdentifier) {
 		this.lineIdentifier = lineIdentifier;
 	}
 }

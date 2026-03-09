@@ -3,7 +3,7 @@ package com.example.tflmcpserver.model.tfl.journey;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TflPlannedWork {
+public class TflPlannedWorkWire {
 
 	private String description;
 

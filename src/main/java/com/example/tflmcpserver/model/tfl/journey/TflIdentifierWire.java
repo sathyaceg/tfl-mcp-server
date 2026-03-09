@@ -3,7 +3,7 @@ package com.example.tflmcpserver.model.tfl.journey;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TflIdentifier {
+public class TflIdentifierWire {
 
 	private String id;
 	private String name;

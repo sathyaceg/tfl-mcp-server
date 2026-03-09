@@ -11,11 +11,11 @@ import com.example.tflmcpserver.model.JourneyPlannerErrorCode;
 import com.example.tflmcpserver.model.api.journey.JourneyDisambiguationSuggestion;
 import com.example.tflmcpserver.model.api.journey.JourneyOptionDetail;
 import com.example.tflmcpserver.model.api.journey.JourneyPlanRequest;
-import com.example.tflmcpserver.model.api.journey.JourneyPlanToolResponse;
-import com.example.tflmcpserver.model.tfl.journey.TflDisambiguation;
-import com.example.tflmcpserver.model.tfl.journey.TflDisambiguationOption;
-import com.example.tflmcpserver.model.tfl.journey.TflItineraryResult;
-import com.example.tflmcpserver.model.tfl.journey.TflJourney;
+import com.example.tflmcpserver.model.api.journey.JourneyPlanResponse;
+import com.example.tflmcpserver.model.tfl.journey.TflDisambiguationWire;
+import com.example.tflmcpserver.model.tfl.journey.TflDisambiguationOptionWire;
+import com.example.tflmcpserver.model.tfl.journey.TflItineraryResultWire;
+import com.example.tflmcpserver.model.tfl.journey.TflJourneyWire;
 import com.example.tflmcpserver.mapper.JourneyResponseMapper;
 import io.github.resilience4j.ratelimiter.RateLimiter;
 import java.util.List;
@@ -50,13 +50,13 @@ class JourneyPlannerServiceTest {
 	void returnsTopFiveFastestJourneysSortedByDuration() {
 		JourneyPlanRequest request = new JourneyPlanRequest("A", "B", null);
 		when(journeyPlannerRateLimiter.acquirePermission()).thenReturn(true);
-		when(tflJourneyClient.journeyResults(request)).thenReturn(new TflItineraryResult(
-				List.of(new TflJourney(30, "2026-02-24T10:00:00", "2026-02-24T10:30:00", List.of()))));
+		when(tflJourneyClient.journeyResults(request)).thenReturn(new TflItineraryResultWire(
+				List.of(new TflJourneyWire(30, "2026-02-24T10:00:00", "2026-02-24T10:30:00", List.of()))));
 		when(journeyResponseMapper.toDisambiguationSuggestions(any())).thenReturn(List.of(), List.of());
 		when(journeyResponseMapper.toTopJourneyDetails(any(), eq(5))).thenReturn(List.of(new JourneyOptionDetail(8,
 				"2026-02-24T10:00:00", "2026-02-24T10:08:00", 1, null, false, null, List.of())));
 
-		JourneyPlanToolResponse response = journeyPlannerService.planJourney(request);
+		JourneyPlanResponse response = journeyPlannerService.planJourney(request);
 
 		assertEquals(true, response.success());
 		assertEquals("OK", response.code());
@@ -68,16 +68,16 @@ class JourneyPlannerServiceTest {
 	void returnsDisambiguationRequiredWithTopSuggestions() {
 		JourneyPlanRequest request = new JourneyPlanRequest("Liverpool Street", "Foo", null);
 		when(journeyPlannerRateLimiter.acquirePermission()).thenReturn(true);
-		TflItineraryResult disambiguationResult = new TflItineraryResult();
+		TflItineraryResultWire disambiguationResult = new TflItineraryResultWire();
 		disambiguationResult.setToLocationDisambiguation(
-				new TflDisambiguation(List.of(new TflDisambiguationOption(80, "51.545335,-0.008048", "/uri1"),
-						new TflDisambiguationOption(95, "51.520000,-0.010000", "/uri2"))));
+				new TflDisambiguationWire(List.of(new TflDisambiguationOptionWire(80, "51.545335,-0.008048", "/uri1"),
+						new TflDisambiguationOptionWire(95, "51.520000,-0.010000", "/uri2"))));
 		when(tflJourneyClient.journeyResults(request)).thenReturn(disambiguationResult);
 		when(journeyResponseMapper.toDisambiguationSuggestions(any())).thenReturn(List.of(),
 				List.of(new JourneyDisambiguationSuggestion("51.520000,-0.010000", 95),
 						new JourneyDisambiguationSuggestion("51.545335,-0.008048", 80)));
 
-		JourneyPlanToolResponse response = journeyPlannerService.planJourney(request);
+		JourneyPlanResponse response = journeyPlannerService.planJourney(request);
 
 		assertEquals(false, response.success());
 		assertEquals(JourneyPlannerErrorCode.DISAMBIGUATION_REQUIRED.name(), response.code());
@@ -95,7 +95,7 @@ class JourneyPlannerServiceTest {
 		when(journeyPlannerRateLimiter.acquirePermission()).thenReturn(true);
 		when(tflJourneyClient.journeyResults(request)).thenThrow(new IllegalArgumentException("invalid input"));
 
-		JourneyPlanToolResponse response = journeyPlannerService.planJourney(request);
+		JourneyPlanResponse response = journeyPlannerService.planJourney(request);
 
 		assertEquals(false, response.success());
 		assertEquals(JourneyPlannerErrorCode.VALIDATION_ERROR.name(), response.code());
@@ -110,7 +110,7 @@ class JourneyPlannerServiceTest {
 				"Bad Gateway", null, new byte[0], null);
 		when(tflJourneyClient.journeyResults(request)).thenThrow(exception);
 
-		JourneyPlanToolResponse response = journeyPlannerService.planJourney(request);
+		JourneyPlanResponse response = journeyPlannerService.planJourney(request);
 
 		assertEquals(false, response.success());
 		assertEquals(JourneyPlannerErrorCode.UPSTREAM_ERROR.name(), response.code());
@@ -125,7 +125,7 @@ class JourneyPlannerServiceTest {
 				HttpHeaders.EMPTY);
 		when(tflJourneyClient.journeyResults(request)).thenThrow(exception);
 
-		JourneyPlanToolResponse response = journeyPlannerService.planJourney(request);
+		JourneyPlanResponse response = journeyPlannerService.planJourney(request);
 
 		assertEquals(false, response.success());
 		assertEquals(JourneyPlannerErrorCode.UPSTREAM_TIMEOUT.name(), response.code());
@@ -137,7 +137,7 @@ class JourneyPlannerServiceTest {
 		when(journeyPlannerRateLimiter.acquirePermission()).thenReturn(true);
 		when(tflJourneyClient.journeyResults(request)).thenThrow(new RuntimeException("boom"));
 
-		JourneyPlanToolResponse response = journeyPlannerService.planJourney(request);
+		JourneyPlanResponse response = journeyPlannerService.planJourney(request);
 
 		assertEquals(false, response.success());
 		assertEquals(JourneyPlannerErrorCode.INTERNAL_ERROR.name(), response.code());
@@ -148,7 +148,7 @@ class JourneyPlannerServiceTest {
 		JourneyPlanRequest request = new JourneyPlanRequest("A", "B", null);
 		when(journeyPlannerRateLimiter.acquirePermission()).thenReturn(false);
 
-		JourneyPlanToolResponse response = journeyPlannerService.planJourney(request);
+		JourneyPlanResponse response = journeyPlannerService.planJourney(request);
 
 		assertEquals(false, response.success());
 		assertEquals(JourneyPlannerErrorCode.RATE_LIMIT_EXCEEDED.name(), response.code());

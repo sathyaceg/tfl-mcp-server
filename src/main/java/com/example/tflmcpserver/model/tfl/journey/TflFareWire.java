@@ -3,7 +3,7 @@ package com.example.tflmcpserver.model.tfl.journey;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TflFare {
+public class TflFareWire {
 
 	private Integer cost;
 	private String chargeProfileName;

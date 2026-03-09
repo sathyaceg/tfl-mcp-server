@@ -2,17 +2,17 @@ package com.example.tflmcpserver.mapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.example.tflmcpserver.model.tfl.journey.TflDisambiguationOption;
-import com.example.tflmcpserver.model.tfl.journey.TflDisruption;
-import com.example.tflmcpserver.model.tfl.journey.TflIdentifier;
-import com.example.tflmcpserver.model.tfl.journey.TflItineraryResult;
-import com.example.tflmcpserver.model.tfl.journey.TflInstruction;
-import com.example.tflmcpserver.model.tfl.journey.TflJourney;
-import com.example.tflmcpserver.model.tfl.journey.TflJourneyFare;
-import com.example.tflmcpserver.model.tfl.journey.TflJourneyLeg;
-import com.example.tflmcpserver.model.tfl.journey.TflPath;
-import com.example.tflmcpserver.model.tfl.journey.TflPlannedWork;
-import com.example.tflmcpserver.model.tfl.journey.TflRouteOption;
+import com.example.tflmcpserver.model.tfl.journey.TflDisambiguationOptionWire;
+import com.example.tflmcpserver.model.tfl.journey.TflDisruptionWire;
+import com.example.tflmcpserver.model.tfl.journey.TflIdentifierWire;
+import com.example.tflmcpserver.model.tfl.journey.TflItineraryResultWire;
+import com.example.tflmcpserver.model.tfl.journey.TflInstructionWire;
+import com.example.tflmcpserver.model.tfl.journey.TflJourneyWire;
+import com.example.tflmcpserver.model.tfl.journey.TflJourneyFareWire;
+import com.example.tflmcpserver.model.tfl.journey.TflJourneyLegWire;
+import com.example.tflmcpserver.model.tfl.journey.TflPathWire;
+import com.example.tflmcpserver.model.tfl.journey.TflPlannedWorkWire;
+import com.example.tflmcpserver.model.tfl.journey.TflRouteOptionWire;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -22,36 +22,36 @@ class DefaultJourneyResponseMapperTest {
 
 	@Test
 	void mapsDetailedJourneyAndLegFields() {
-		TflInstruction instruction = new TflInstruction();
+		TflInstructionWire instruction = new TflInstructionWire();
 		instruction.setSummary("Central line to Tottenham Court Road");
 		instruction.setDetailed("Central line towards Ealing Broadway");
 
-		TflIdentifier mode = new TflIdentifier();
+		TflIdentifierWire mode = new TflIdentifierWire();
 		mode.setId("tube");
 		mode.setName("tube");
 
-		TflIdentifier line = new TflIdentifier();
+		TflIdentifierWire line = new TflIdentifierWire();
 		line.setName("Central");
 
-		TflRouteOption routeOption = new TflRouteOption();
+		TflRouteOptionWire routeOption = new TflRouteOptionWire();
 		routeOption.setName("IgnoreMeWhenLineIdentifierExists");
 		routeOption.setDirection("Inbound");
 		routeOption.setLineIdentifier(line);
 
-		TflDisruption disruption = new TflDisruption();
+		TflDisruptionWire disruption = new TflDisruptionWire();
 		disruption.setSummary("Central Line: Minor delays.");
 
-		TflPlannedWork plannedWork = new TflPlannedWork();
+		TflPlannedWorkWire plannedWork = new TflPlannedWorkWire();
 		plannedWork.setDescription("Planned escalator maintenance.");
 
-		TflIdentifier stop1 = new TflIdentifier();
+		TflIdentifierWire stop1 = new TflIdentifierWire();
 		stop1.setName("Bank Underground Station");
-		TflIdentifier stop2 = new TflIdentifier();
+		TflIdentifierWire stop2 = new TflIdentifierWire();
 		stop2.setId("940GZZLUTCR");
-		TflPath path = new TflPath();
+		TflPathWire path = new TflPathWire();
 		path.setStopPoints(List.of(stop1, stop2));
 
-		TflJourneyLeg leg = new TflJourneyLeg();
+		TflJourneyLegWire leg = new TflJourneyLegWire();
 		leg.setDuration(11);
 		leg.setDepartureTime("2026-03-05T23:39:00");
 		leg.setArrivalTime("2026-03-05T23:50:00");
@@ -66,15 +66,15 @@ class DefaultJourneyResponseMapperTest {
 		leg.setPlannedWorks(List.of(plannedWork));
 		leg.setPath(path);
 
-		TflJourneyFare fare = new TflJourneyFare();
+		TflJourneyFareWire fare = new TflJourneyFareWire();
 		fare.setTotalCost(310);
 
-		TflJourney journey = new TflJourney(18, "2026-03-05T23:39:00", "2026-03-05T23:57:00", List.of(leg));
+		TflJourneyWire journey = new TflJourneyWire(18, "2026-03-05T23:39:00", "2026-03-05T23:57:00", List.of(leg));
 		journey.setDescription("Test description");
 		journey.setAlternativeRoute(false);
 		journey.setFare(fare);
 
-		TflItineraryResult itineraryResult = new TflItineraryResult(List.of(journey));
+		TflItineraryResultWire itineraryResult = new TflItineraryResultWire(List.of(journey));
 		var details = mapper.toTopJourneyDetails(itineraryResult, 5);
 
 		assertEquals(1, details.size());
@@ -98,20 +98,20 @@ class DefaultJourneyResponseMapperTest {
 
 	@Test
 	void fallsBackForRouteNameAndDisruptionDescription() {
-		TflDisruption disruption = new TflDisruption();
+		TflDisruptionWire disruption = new TflDisruptionWire();
 		disruption.setDescription("Use alternative transport.");
 
-		TflRouteOption routeOption = new TflRouteOption();
+		TflRouteOptionWire routeOption = new TflRouteOptionWire();
 		routeOption.setName("Northern");
 		routeOption.setDirection("Inbound");
 
-		TflJourneyLeg leg = new TflJourneyLeg();
+		TflJourneyLegWire leg = new TflJourneyLegWire();
 		leg.setDuration(2);
 		leg.setRouteOptions(List.of(routeOption));
 		leg.setDisruptions(List.of(disruption));
 
-		TflJourney journey = new TflJourney(2, "2026-03-05T23:39:00", "2026-03-05T23:41:00", List.of(leg));
-		var details = mapper.toTopJourneyDetails(new TflItineraryResult(List.of(journey)), 5);
+		TflJourneyWire journey = new TflJourneyWire(2, "2026-03-05T23:39:00", "2026-03-05T23:41:00", List.of(leg));
+		var details = mapper.toTopJourneyDetails(new TflItineraryResultWire(List.of(journey)), 5);
 
 		assertEquals("Northern", details.get(0).legs().get(0).routeName());
 		assertEquals(List.of("Use alternative transport."), details.get(0).legs().get(0).disruptionSummaries());
@@ -119,10 +119,10 @@ class DefaultJourneyResponseMapperTest {
 
 	@Test
 	void sortsAndLimitsDisambiguationSuggestions() {
-		List<TflDisambiguationOption> options = List.of(new TflDisambiguationOption(50, "A", "/a"),
-				new TflDisambiguationOption(null, "B", "/b"), new TflDisambiguationOption(90, "C", "/c"),
-				new TflDisambiguationOption(80, " ", "/blank"), new TflDisambiguationOption(85, "D", "/d"),
-				new TflDisambiguationOption(70, "E", "/e"), new TflDisambiguationOption(60, "F", "/f"));
+		List<TflDisambiguationOptionWire> options = List.of(new TflDisambiguationOptionWire(50, "A", "/a"),
+				new TflDisambiguationOptionWire(null, "B", "/b"), new TflDisambiguationOptionWire(90, "C", "/c"),
+				new TflDisambiguationOptionWire(80, " ", "/blank"), new TflDisambiguationOptionWire(85, "D", "/d"),
+				new TflDisambiguationOptionWire(70, "E", "/e"), new TflDisambiguationOptionWire(60, "F", "/f"));
 
 		var suggestions = mapper.toDisambiguationSuggestions(options);
 

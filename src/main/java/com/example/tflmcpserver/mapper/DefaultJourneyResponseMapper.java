@@ -3,14 +3,14 @@ package com.example.tflmcpserver.mapper;
 import com.example.tflmcpserver.model.api.journey.JourneyDisambiguationSuggestion;
 import com.example.tflmcpserver.model.api.journey.JourneyLegDetail;
 import com.example.tflmcpserver.model.api.journey.JourneyOptionDetail;
-import com.example.tflmcpserver.model.tfl.journey.TflDisambiguationOption;
-import com.example.tflmcpserver.model.tfl.journey.TflDisruption;
-import com.example.tflmcpserver.model.tfl.journey.TflIdentifier;
-import com.example.tflmcpserver.model.tfl.journey.TflItineraryResult;
-import com.example.tflmcpserver.model.tfl.journey.TflJourney;
-import com.example.tflmcpserver.model.tfl.journey.TflJourneyLeg;
-import com.example.tflmcpserver.model.tfl.journey.TflPlannedWork;
-import com.example.tflmcpserver.model.tfl.journey.TflRouteOption;
+import com.example.tflmcpserver.model.tfl.journey.TflDisambiguationOptionWire;
+import com.example.tflmcpserver.model.tfl.journey.TflDisruptionWire;
+import com.example.tflmcpserver.model.tfl.journey.TflIdentifierWire;
+import com.example.tflmcpserver.model.tfl.journey.TflItineraryResultWire;
+import com.example.tflmcpserver.model.tfl.journey.TflJourneyWire;
+import com.example.tflmcpserver.model.tfl.journey.TflJourneyLegWire;
+import com.example.tflmcpserver.model.tfl.journey.TflPlannedWorkWire;
+import com.example.tflmcpserver.model.tfl.journey.TflRouteOptionWire;
 import java.util.Comparator;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -19,13 +19,14 @@ import org.springframework.stereotype.Component;
 public class DefaultJourneyResponseMapper implements JourneyResponseMapper {
 
 	@Override
-	public List<JourneyDisambiguationSuggestion> toDisambiguationSuggestions(List<TflDisambiguationOption> options) {
+	public List<JourneyDisambiguationSuggestion> toDisambiguationSuggestions(
+			List<TflDisambiguationOptionWire> options) {
 		if (options == null) {
 			return List.of();
 		}
 		return options.stream()
 				.filter(option -> option.getParameterValue() != null && !option.getParameterValue().isBlank())
-				.sorted(Comparator.comparing(TflDisambiguationOption::getMatchQuality,
+				.sorted(Comparator.comparing(TflDisambiguationOptionWire::getMatchQuality,
 						Comparator.nullsLast(Comparator.reverseOrder())))
 				.map(option -> new JourneyDisambiguationSuggestion(option.getParameterValue(),
 						option.getMatchQuality()))
@@ -33,18 +34,18 @@ public class DefaultJourneyResponseMapper implements JourneyResponseMapper {
 	}
 
 	@Override
-	public List<JourneyOptionDetail> toTopJourneyDetails(TflItineraryResult itineraryResult, int limit) {
+	public List<JourneyOptionDetail> toTopJourneyDetails(TflItineraryResultWire itineraryResult, int limit) {
 		if (itineraryResult == null || itineraryResult.getJourneys() == null) {
 			return List.of();
 		}
 		return itineraryResult.getJourneys().stream()
-				.sorted(Comparator.comparingInt(TflJourney::getDuration)
-						.thenComparing(TflJourney::getArrivalDateTime, Comparator.nullsLast(String::compareTo))
-						.thenComparing(TflJourney::getStartDateTime, Comparator.nullsLast(String::compareTo)))
+				.sorted(Comparator.comparingInt(TflJourneyWire::getDuration)
+						.thenComparing(TflJourneyWire::getArrivalDateTime, Comparator.nullsLast(String::compareTo))
+						.thenComparing(TflJourneyWire::getStartDateTime, Comparator.nullsLast(String::compareTo)))
 				.limit(limit).map(this::toDetail).toList();
 	}
 
-	private JourneyOptionDetail toDetail(TflJourney journey) {
+	private JourneyOptionDetail toDetail(TflJourneyWire journey) {
 		List<JourneyLegDetail> legDetails = journey.getLegs() == null
 				? List.of()
 				: journey.getLegs().stream().map(this::toLegDetail).toList();
@@ -54,7 +55,7 @@ public class DefaultJourneyResponseMapper implements JourneyResponseMapper {
 				legCount, journey.getDescription(), journey.isAlternativeRoute(), totalFarePence, legDetails);
 	}
 
-	private JourneyLegDetail toLegDetail(TflJourneyLeg leg) {
+	private JourneyLegDetail toLegDetail(TflJourneyLegWire leg) {
 		String instructionSummary = leg.getInstruction() == null ? null : leg.getInstruction().getSummary();
 		String instructionDetailed = leg.getInstruction() == null ? null : leg.getInstruction().getDetailed();
 		String modeId = leg.getMode() == null ? null : leg.getMode().getId();
@@ -63,7 +64,7 @@ public class DefaultJourneyResponseMapper implements JourneyResponseMapper {
 		String routeName = null;
 		String direction = null;
 		if (leg.getRouteOptions() != null && !leg.getRouteOptions().isEmpty()) {
-			TflRouteOption primaryRouteOption = leg.getRouteOptions().get(0);
+			TflRouteOptionWire primaryRouteOption = leg.getRouteOptions().get(0);
 			routeName = primaryRouteOption.getLineIdentifier() != null
 					&& primaryRouteOption.getLineIdentifier().getName() != null
 							? primaryRouteOption.getLineIdentifier().getName()
@@ -78,7 +79,7 @@ public class DefaultJourneyResponseMapper implements JourneyResponseMapper {
 
 		List<String> plannedWorkDescriptions = leg.getPlannedWorks() == null
 				? List.of()
-				: leg.getPlannedWorks().stream().map(TflPlannedWork::getDescription)
+				: leg.getPlannedWorks().stream().map(TflPlannedWorkWire::getDescription)
 						.filter(text -> text != null && !text.isBlank()).toList();
 
 		List<String> stopPoints = (leg.getPath() == null || leg.getPath().getStopPoints() == null)
@@ -95,7 +96,7 @@ public class DefaultJourneyResponseMapper implements JourneyResponseMapper {
 				plannedWorkDescriptions, stopPoints);
 	}
 
-	private String disruptionSummary(TflDisruption disruption) {
+	private String disruptionSummary(TflDisruptionWire disruption) {
 		if (disruption == null) {
 			return null;
 		}

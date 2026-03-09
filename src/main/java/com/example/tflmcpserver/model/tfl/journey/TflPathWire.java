@@ -4,15 +4,15 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TflPath {
+public class TflPathWire {
 
-	private List<TflIdentifier> stopPoints;
+	private List<TflIdentifierWire> stopPoints;
 
-	public List<TflIdentifier> getStopPoints() {
+	public List<TflIdentifierWire> getStopPoints() {
 		return stopPoints;
 	}
 
-	public void setStopPoints(List<TflIdentifier> stopPoints) {
+	public void setStopPoints(List<TflIdentifierWire> stopPoints) {
 		this.stopPoints = stopPoints;
 	}
 }
