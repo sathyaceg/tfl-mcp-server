@@ -4,20 +4,20 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TflJourney {
+public class TflJourneyWire {
 
 	private int duration;
 	private String startDateTime;
 	private String arrivalDateTime;
 	private String description;
 	private boolean alternativeRoute;
-	private TflJourneyFare fare;
-	private List<TflJourneyLeg> legs;
+	private TflJourneyFareWire fare;
+	private List<TflJourneyLegWire> legs;
 
-	public TflJourney() {
+	public TflJourneyWire() {
 	}
 
-	public TflJourney(int duration, String startDateTime, String arrivalDateTime, List<TflJourneyLeg> legs) {
+	public TflJourneyWire(int duration, String startDateTime, String arrivalDateTime, List<TflJourneyLegWire> legs) {
 		this.duration = duration;
 		this.startDateTime = startDateTime;
 		this.arrivalDateTime = arrivalDateTime;
@@ -64,19 +64,19 @@ public class TflJourney {
 		this.alternativeRoute = alternativeRoute;
 	}
 
-	public TflJourneyFare getFare() {
+	public TflJourneyFareWire getFare() {
 		return fare;
 	}
 
-	public void setFare(TflJourneyFare fare) {
+	public void setFare(TflJourneyFareWire fare) {
 		this.fare = fare;
 	}
 
-	public List<TflJourneyLeg> getLegs() {
+	public List<TflJourneyLegWire> getLegs() {
 		return legs;
 	}
 
-	public void setLegs(List<TflJourneyLeg> legs) {
+	public void setLegs(List<TflJourneyLegWire> legs) {
 		this.legs = legs;
 	}
 }

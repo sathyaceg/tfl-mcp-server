@@ -4,24 +4,24 @@ import com.example.tflmcpserver.model.JourneyPlannerErrorCode;
 import jakarta.annotation.Nullable;
 import java.util.List;
 
-public record JourneyPlanToolResponse(boolean success, String code, String message,
+public record JourneyPlanResponse(boolean success, String code, String message,
 		@Nullable List<JourneyOptionDetail> topJourneyDetails,
 		@Nullable List<JourneyDisambiguationSuggestion> fromLocationDisambiguation,
 		@Nullable List<JourneyDisambiguationSuggestion> toLocationDisambiguation) {
 
-	public static JourneyPlanToolResponse success(List<JourneyOptionDetail> topJourneyDetails) {
-		return new JourneyPlanToolResponse(true, "OK", "Journey plan retrieved.", topJourneyDetails, null, null);
+	public static JourneyPlanResponse success(List<JourneyOptionDetail> topJourneyDetails) {
+		return new JourneyPlanResponse(true, "OK", "Journey plan retrieved.", topJourneyDetails, null, null);
 	}
 
-	public static JourneyPlanToolResponse disambiguationRequired(
+	public static JourneyPlanResponse disambiguationRequired(
 			List<JourneyDisambiguationSuggestion> fromLocationDisambiguation,
 			List<JourneyDisambiguationSuggestion> toLocationDisambiguation) {
-		return new JourneyPlanToolResponse(false, JourneyPlannerErrorCode.DISAMBIGUATION_REQUIRED.name(),
+		return new JourneyPlanResponse(false, JourneyPlannerErrorCode.DISAMBIGUATION_REQUIRED.name(),
 				"Input location is ambiguous. Choose one of the suggested parameterValue values.", null,
 				fromLocationDisambiguation, toLocationDisambiguation);
 	}
 
-	public static JourneyPlanToolResponse error(String code, String message) {
-		return new JourneyPlanToolResponse(false, code, message, null, null, null);
+	public static JourneyPlanResponse error(String code, String message) {
+		return new JourneyPlanResponse(false, code, message, null, null, null);
 	}
 }

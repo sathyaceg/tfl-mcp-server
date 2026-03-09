@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 
 import com.example.tflmcpserver.model.api.journey.JourneyOptionDetail;
 import com.example.tflmcpserver.model.api.journey.JourneyPlanRequest;
-import com.example.tflmcpserver.model.api.journey.JourneyPlanToolResponse;
+import com.example.tflmcpserver.model.api.journey.JourneyPlanResponse;
 import com.example.tflmcpserver.service.JourneyPlannerService;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -27,11 +27,11 @@ class JourneyPlannerToolsTest {
 	@Test
 	void delegatesToService() {
 		JourneyPlanRequest request = new JourneyPlanRequest("From", "To", null);
-		JourneyPlanToolResponse expected = JourneyPlanToolResponse.success(List.of(new JourneyOptionDetail(12,
+		JourneyPlanResponse expected = JourneyPlanResponse.success(List.of(new JourneyOptionDetail(12,
 				"2026-02-24T10:00:00", "2026-02-24T10:12:00", 2, "desc", false, null, List.of())));
 		when(journeyPlannerService.planJourney(request)).thenReturn(expected);
 
-		JourneyPlanToolResponse response = journeyPlannerTools.planJourney(request);
+		JourneyPlanResponse response = journeyPlannerTools.planJourney(request);
 
 		assertEquals(expected, response);
 		verify(journeyPlannerService).planJourney(request);

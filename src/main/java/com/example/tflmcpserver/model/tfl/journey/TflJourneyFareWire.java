@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TflJourneyFare {
+public class TflJourneyFareWire {
 
 	private Integer totalCost;
-	private List<TflFare> fares;
+	private List<TflFareWire> fares;
 
 	public Integer getTotalCost() {
 		return totalCost;
@@ -17,11 +17,11 @@ public class TflJourneyFare {
 		this.totalCost = totalCost;
 	}
 
-	public List<TflFare> getFares() {
+	public List<TflFareWire> getFares() {
 		return fares;
 	}
 
-	public void setFares(List<TflFare> fares) {
+	public void setFares(List<TflFareWire> fares) {
 		this.fares = fares;
 	}
 }

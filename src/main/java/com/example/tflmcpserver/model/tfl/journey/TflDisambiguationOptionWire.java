@@ -3,16 +3,16 @@ package com.example.tflmcpserver.model.tfl.journey;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TflDisambiguationOption {
+public class TflDisambiguationOptionWire {
 
 	private Integer matchQuality;
 	private String parameterValue;
 	private String uri;
 
-	public TflDisambiguationOption() {
+	public TflDisambiguationOptionWire() {
 	}
 
-	public TflDisambiguationOption(Integer matchQuality, String parameterValue, String uri) {
+	public TflDisambiguationOptionWire(Integer matchQuality, String parameterValue, String uri) {
 		this.matchQuality = matchQuality;
 		this.parameterValue = parameterValue;
 		this.uri = uri;

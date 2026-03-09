@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.example.tflmcpserver.model.api.journey.JourneyPlanRequest;
 import com.example.tflmcpserver.model.TflApiProperties;
-import com.example.tflmcpserver.model.tfl.journey.TflItineraryResult;
+import com.example.tflmcpserver.model.tfl.journey.TflItineraryResultWire;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -27,7 +27,8 @@ class TflJourneyClientTest {
 			WebClient webClient = WebClient.builder().baseUrl(properties.baseUrl()).build();
 			TflJourneyClient client = new TflJourneyClient(webClient, properties);
 
-			TflItineraryResult response = client.journeyResults(new JourneyPlanRequest("Waterloo", "Victoria", null));
+			TflItineraryResultWire response = client
+					.journeyResults(new JourneyPlanRequest("Waterloo", "Victoria", null));
 			RecordedRequest recordedRequest = mockWebServer.takeRequest();
 
 			assertEquals(1, response.getJourneys().size());
@@ -49,7 +50,7 @@ class TflJourneyClientTest {
 			WebClient webClient = WebClient.builder().baseUrl(properties.baseUrl()).build();
 			TflJourneyClient client = new TflJourneyClient(webClient, properties);
 
-			TflItineraryResult response = client
+			TflItineraryResultWire response = client
 					.journeyResults(new JourneyPlanRequest("Liverpool Street", "Foo", null));
 
 			assertEquals(

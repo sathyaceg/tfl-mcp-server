@@ -5,8 +5,8 @@ import com.example.tflmcpserver.model.JourneyPlannerErrorCode;
 import com.example.tflmcpserver.model.api.journey.JourneyDisambiguationSuggestion;
 import com.example.tflmcpserver.model.api.journey.JourneyOptionDetail;
 import com.example.tflmcpserver.model.api.journey.JourneyPlanRequest;
-import com.example.tflmcpserver.model.api.journey.JourneyPlanToolResponse;
-import com.example.tflmcpserver.model.tfl.journey.TflItineraryResult;
+import com.example.tflmcpserver.model.api.journey.JourneyPlanResponse;
+import com.example.tflmcpserver.model.tfl.journey.TflItineraryResultWire;
 import com.example.tflmcpserver.mapper.JourneyResponseMapper;
 import io.github.resilience4j.ratelimiter.RateLimiter;
 import java.util.List;
@@ -37,13 +37,13 @@ public class JourneyPlannerService {
 		this.journeyPlannerRateLimiter = journeyPlannerRateLimiter;
 	}
 
-	public JourneyPlanToolResponse planJourney(JourneyPlanRequest request) {
+	public JourneyPlanResponse planJourney(JourneyPlanRequest request) {
 		if (!journeyPlannerRateLimiter.acquirePermission()) {
 			logger.warn("Journey planning denied due to rate limiting");
 			return error(JourneyPlannerErrorCode.RATE_LIMIT_EXCEEDED, RATE_LIMIT_EXCEEDED_MESSAGE);
 		}
 		try {
-			TflItineraryResult itineraryResult = tflJourneyClient.journeyResults(request);
+			TflItineraryResultWire itineraryResult = tflJourneyClient.journeyResults(request);
 			List<JourneyDisambiguationSuggestion> fromLocationDisambiguation = journeyResponseMapper
 					.toDisambiguationSuggestions(itineraryResult.getFromLocationDisambiguation() == null
 							? null
@@ -55,18 +55,17 @@ public class JourneyPlannerService {
 			if (!fromLocationDisambiguation.isEmpty() || !toLocationDisambiguation.isEmpty()) {
 				logger.info("Journey planning requires disambiguation (fromOptions={}, toOptions={})",
 						fromLocationDisambiguation.size(), toLocationDisambiguation.size());
-				return JourneyPlanToolResponse.disambiguationRequired(fromLocationDisambiguation,
-						toLocationDisambiguation);
+				return JourneyPlanResponse.disambiguationRequired(fromLocationDisambiguation, toLocationDisambiguation);
 			}
 			List<JourneyOptionDetail> topJourneyDetails = journeyResponseMapper.toTopJourneyDetails(itineraryResult, 5);
 			logger.info("Journey planning succeeded with {} option(s)", topJourneyDetails.size());
-			return JourneyPlanToolResponse.success(topJourneyDetails);
+			return JourneyPlanResponse.success(topJourneyDetails);
 		} catch (RuntimeException ex) {
 			return toErrorResponse(ex);
 		}
 	}
 
-	private JourneyPlanToolResponse toErrorResponse(RuntimeException ex) {
+	private JourneyPlanResponse toErrorResponse(RuntimeException ex) {
 		if (ex instanceof IllegalArgumentException) {
 			logger.warn("Journey planning validation failed: {}", ex.getMessage());
 			return error(JourneyPlannerErrorCode.VALIDATION_ERROR, ex.getMessage());
@@ -88,8 +87,8 @@ public class JourneyPlannerService {
 				: error(JourneyPlannerErrorCode.INTERNAL_ERROR, INTERNAL_ERROR_MESSAGE);
 	}
 
-	private JourneyPlanToolResponse error(JourneyPlannerErrorCode code, String message) {
-		return JourneyPlanToolResponse.error(code.name(), message);
+	private JourneyPlanResponse error(JourneyPlannerErrorCode code, String message) {
+		return JourneyPlanResponse.error(code.name(), message);
 	}
 
 	private boolean hasTimeoutCause(Throwable throwable) {

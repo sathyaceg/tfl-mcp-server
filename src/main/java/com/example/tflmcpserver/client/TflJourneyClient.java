@@ -2,7 +2,7 @@ package com.example.tflmcpserver.client;
 
 import com.example.tflmcpserver.model.TflApiProperties;
 import com.example.tflmcpserver.model.api.journey.JourneyPlanRequest;
-import com.example.tflmcpserver.model.tfl.journey.TflItineraryResult;
+import com.example.tflmcpserver.model.tfl.journey.TflItineraryResultWire;
 import java.time.Duration;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -19,7 +19,7 @@ public class TflJourneyClient {
 		this.tflApiProperties = tflApiProperties;
 	}
 
-	public TflItineraryResult journeyResults(JourneyPlanRequest request) {
+	public TflItineraryResultWire journeyResults(JourneyPlanRequest request) {
 		if (request == null || !StringUtils.hasText(request.from()) || !StringUtils.hasText(request.to())) {
 			throw new IllegalArgumentException("Both 'from' and 'to' must be provided.");
 		}
@@ -27,7 +27,7 @@ public class TflJourneyClient {
 		return tflWebClient.get()
 				.uri(uriBuilder -> uriBuilder.path("/Journey/JourneyResults/{from}/to/{to}")
 						.queryParam("app_key", tflApiProperties.key()).build(request.from(), request.to()))
-				.retrieve().bodyToMono(TflItineraryResult.class)
+				.retrieve().bodyToMono(TflItineraryResultWire.class)
 				.timeout(Duration.ofSeconds(tflApiProperties.timeoutSeconds())).blockOptional()
 				.orElseThrow(() -> new IllegalStateException("Empty response from TfL Journey API"));
 	}
