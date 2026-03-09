@@ -1,4 +1,4 @@
-package com.example.tflmcpserver.model.tfl;
+package com.example.tflmcpserver.model.tfl.journey;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;

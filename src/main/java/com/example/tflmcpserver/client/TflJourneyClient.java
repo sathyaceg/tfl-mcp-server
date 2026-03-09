@@ -1,8 +1,8 @@
 package com.example.tflmcpserver.client;
 
 import com.example.tflmcpserver.model.TflApiProperties;
-import com.example.tflmcpserver.model.JourneyPlanRequest;
-import com.example.tflmcpserver.model.tfl.TflItineraryResult;
+import com.example.tflmcpserver.model.api.journey.JourneyPlanRequest;
+import com.example.tflmcpserver.model.tfl.journey.TflItineraryResult;
 import java.time.Duration;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;

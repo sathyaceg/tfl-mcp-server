@@ -1,4 +1,4 @@
-package com.example.tflmcpserver.model;
+package com.example.tflmcpserver.model.api.journey;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
