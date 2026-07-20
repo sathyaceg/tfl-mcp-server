@@ -1,11 +1,11 @@
 package com.example.tflmcpserver.service;
 
 import com.example.tflmcpserver.client.TflStationDataClient;
-import com.example.tflmcpserver.model.StationDisambiguationSuggestion;
-import com.example.tflmcpserver.model.StationToiletDetail;
-import com.example.tflmcpserver.model.StationToiletErrorCode;
-import com.example.tflmcpserver.model.StationToiletLookupRequest;
-import com.example.tflmcpserver.model.StationToiletToolResponse;
+import com.example.tflmcpserver.model.api.station.StationDisambiguationSuggestion;
+import com.example.tflmcpserver.model.api.station.StationToiletDetail;
+import com.example.tflmcpserver.model.api.station.StationToiletErrorCode;
+import com.example.tflmcpserver.model.api.station.StationToiletLookupRequest;
+import com.example.tflmcpserver.model.api.station.StationToiletToolResponse;
 import io.github.resilience4j.ratelimiter.RateLimiter;
 import java.util.List;
 import java.util.regex.Matcher;

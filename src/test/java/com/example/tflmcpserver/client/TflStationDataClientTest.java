@@ -38,4 +38,21 @@ class TflStationDataClientTest {
 		assertEquals(2, toilets.size());
 		assertEquals("Located on platform 2", toilets.get(0).location());
 	}
+
+	@Test
+	void ignoresApostrophesWhenMatchingStationNames() throws IOException {
+		Files.writeString(tempDir.resolve("Stations.csv"), """
+				UniqueId,Name
+				HUBELM,Elmers End
+				HUBHEN,Hendon
+				""");
+		Files.writeString(tempDir.resolve("Toilets.csv"),
+				"""
+						StationUniqueId,Id,IsAccessible,HasBabyChanging,IsInsideGateLine,Location,IsFeeCharged,Type,IsManagedByTfL
+						""");
+		TflStationDataClient client = new TflStationDataClient(new TflStationDataProperties(tempDir.toString()));
+
+		assertEquals("HUBELM", client.findStationsByName("Elmer's End", 5).get(0).uniqueId());
+		assertEquals("HUBELM", client.findStationsByName("Elmer\u2019s End station", 5).get(0).uniqueId());
+	}
 }

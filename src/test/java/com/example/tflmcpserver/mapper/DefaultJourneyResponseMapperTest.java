@@ -3,6 +3,7 @@ package com.example.tflmcpserver.mapper;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.example.tflmcpserver.model.tfl.journey.TflDisambiguationOptionWire;
+import com.example.tflmcpserver.model.tfl.journey.TflDisambiguationPlaceWire;
 import com.example.tflmcpserver.model.tfl.journey.TflDisruptionWire;
 import com.example.tflmcpserver.model.tfl.journey.TflIdentifierWire;
 import com.example.tflmcpserver.model.tfl.journey.TflItineraryResultWire;
@@ -119,18 +120,28 @@ class DefaultJourneyResponseMapperTest {
 
 	@Test
 	void sortsAndLimitsDisambiguationSuggestions() {
+		TflDisambiguationPlaceWire bondStreet = new TflDisambiguationPlaceWire("Bond Street, Bond Street Station",
+				"StopPoint", "HUBBDS", List.of("tube", "elizabeth-line"), 51.513965655451, -0.148886173028);
 		List<TflDisambiguationOptionWire> options = List.of(new TflDisambiguationOptionWire(50, "A", "/a"),
-				new TflDisambiguationOptionWire(null, "B", "/b"), new TflDisambiguationOptionWire(90, "C", "/c"),
-				new TflDisambiguationOptionWire(80, " ", "/blank"), new TflDisambiguationOptionWire(85, "D", "/d"),
-				new TflDisambiguationOptionWire(70, "E", "/e"), new TflDisambiguationOptionWire(60, "F", "/f"));
+				new TflDisambiguationOptionWire(null, "B", "/b"),
+				new TflDisambiguationOptionWire(100, "C", "/c", bondStreet),
+				new TflDisambiguationOptionWire(99, " ", "/blank"), new TflDisambiguationOptionWire(95, "D", "/d"),
+				new TflDisambiguationOptionWire(90, "E", "/e"), new TflDisambiguationOptionWire(85, "F", "/f"),
+				new TflDisambiguationOptionWire(80, "G", "/g"), new TflDisambiguationOptionWire(75, "H", "/h"),
+				new TflDisambiguationOptionWire(70, "I", "/i"), new TflDisambiguationOptionWire(65, "J", "/j"),
+				new TflDisambiguationOptionWire(60, "K", "/k"), new TflDisambiguationOptionWire(55, "L", "/l"));
 
 		var suggestions = mapper.toDisambiguationSuggestions(options);
 
-		assertEquals(5, suggestions.size());
+		assertEquals(10, suggestions.size());
 		assertEquals("C", suggestions.get(0).parameterValue());
+		assertEquals("Bond Street, Bond Street Station", suggestions.get(0).commonName());
+		assertEquals("StopPoint", suggestions.get(0).placeType());
+		assertEquals("HUBBDS", suggestions.get(0).naptanId());
+		assertEquals(List.of("tube", "elizabeth-line"), suggestions.get(0).modes());
 		assertEquals("D", suggestions.get(1).parameterValue());
 		assertEquals("E", suggestions.get(2).parameterValue());
 		assertEquals("F", suggestions.get(3).parameterValue());
-		assertEquals("A", suggestions.get(4).parameterValue());
+		assertEquals("L", suggestions.get(9).parameterValue());
 	}
 }

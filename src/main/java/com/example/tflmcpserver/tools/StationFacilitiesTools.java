@@ -1,7 +1,7 @@
 package com.example.tflmcpserver.tools;
 
-import com.example.tflmcpserver.model.StationToiletLookupRequest;
-import com.example.tflmcpserver.model.StationToiletToolResponse;
+import com.example.tflmcpserver.model.api.station.StationToiletLookupRequest;
+import com.example.tflmcpserver.model.api.station.StationToiletToolResponse;
 import com.example.tflmcpserver.service.StationToiletService;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;

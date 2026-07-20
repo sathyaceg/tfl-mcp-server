@@ -8,6 +8,7 @@ public class TflDisambiguationOptionWire {
 	private Integer matchQuality;
 	private String parameterValue;
 	private String uri;
+	private TflDisambiguationPlaceWire place;
 
 	public TflDisambiguationOptionWire() {
 	}
@@ -16,6 +17,12 @@ public class TflDisambiguationOptionWire {
 		this.matchQuality = matchQuality;
 		this.parameterValue = parameterValue;
 		this.uri = uri;
+	}
+
+	public TflDisambiguationOptionWire(Integer matchQuality, String parameterValue, String uri,
+			TflDisambiguationPlaceWire place) {
+		this(matchQuality, parameterValue, uri);
+		this.place = place;
 	}
 
 	public Integer getMatchQuality() {
@@ -40,5 +47,13 @@ public class TflDisambiguationOptionWire {
 
 	public void setUri(String uri) {
 		this.uri = uri;
+	}
+
+	public TflDisambiguationPlaceWire getPlace() {
+		return place;
+	}
+
+	public void setPlace(TflDisambiguationPlaceWire place) {
+		this.place = place;
 	}
 }

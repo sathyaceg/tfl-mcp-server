@@ -1,4 +1,4 @@
-package com.example.tflmcpserver.model;
+package com.example.tflmcpserver.model.api.station;
 
 import jakarta.annotation.Nullable;
 import java.util.List;

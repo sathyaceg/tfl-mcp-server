@@ -1,4 +1,4 @@
-package com.example.tflmcpserver.model;
+package com.example.tflmcpserver.model.api.station;
 
 public enum StationToiletErrorCode {
 	VALIDATION_ERROR, STATION_NOT_FOUND, DISAMBIGUATION_REQUIRED, RATE_LIMIT_EXCEEDED, DATA_NOT_AVAILABLE, INTERNAL_ERROR

@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.example.tflmcpserver.model.StationToiletLookupRequest;
-import com.example.tflmcpserver.model.StationToiletToolResponse;
+import com.example.tflmcpserver.model.api.station.StationToiletLookupRequest;
+import com.example.tflmcpserver.model.api.station.StationToiletToolResponse;
 import com.example.tflmcpserver.service.StationToiletService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

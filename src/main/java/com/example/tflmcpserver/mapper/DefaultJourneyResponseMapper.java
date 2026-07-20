@@ -4,6 +4,7 @@ import com.example.tflmcpserver.model.api.journey.JourneyDisambiguationSuggestio
 import com.example.tflmcpserver.model.api.journey.JourneyLegDetail;
 import com.example.tflmcpserver.model.api.journey.JourneyOptionDetail;
 import com.example.tflmcpserver.model.tfl.journey.TflDisambiguationOptionWire;
+import com.example.tflmcpserver.model.tfl.journey.TflDisambiguationPlaceWire;
 import com.example.tflmcpserver.model.tfl.journey.TflDisruptionWire;
 import com.example.tflmcpserver.model.tfl.journey.TflIdentifierWire;
 import com.example.tflmcpserver.model.tfl.journey.TflItineraryResultWire;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class DefaultJourneyResponseMapper implements JourneyResponseMapper {
 
+	private static final int MAX_DISAMBIGUATION_SUGGESTIONS = 10;
+
 	@Override
 	public List<JourneyDisambiguationSuggestion> toDisambiguationSuggestions(
 			List<TflDisambiguationOptionWire> options) {
@@ -28,9 +31,16 @@ public class DefaultJourneyResponseMapper implements JourneyResponseMapper {
 				.filter(option -> option.getParameterValue() != null && !option.getParameterValue().isBlank())
 				.sorted(Comparator.comparing(TflDisambiguationOptionWire::getMatchQuality,
 						Comparator.nullsLast(Comparator.reverseOrder())))
-				.map(option -> new JourneyDisambiguationSuggestion(option.getParameterValue(),
-						option.getMatchQuality()))
-				.limit(5).toList();
+				.map(this::toDisambiguationSuggestion).limit(MAX_DISAMBIGUATION_SUGGESTIONS).toList();
+	}
+
+	private JourneyDisambiguationSuggestion toDisambiguationSuggestion(TflDisambiguationOptionWire option) {
+		TflDisambiguationPlaceWire place = option.getPlace();
+		return new JourneyDisambiguationSuggestion(option.getParameterValue(), option.getMatchQuality(),
+				place == null ? null : place.getCommonName(), place == null ? null : place.getPlaceType(),
+				place == null ? null : place.getNaptanId(),
+				place == null || place.getModes() == null ? List.of() : List.copyOf(place.getModes()),
+				place == null ? null : place.getLat(), place == null ? null : place.getLon());
 	}
 
 	@Override

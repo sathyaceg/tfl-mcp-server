@@ -5,9 +5,9 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.example.tflmcpserver.client.TflStationDataClient;
-import com.example.tflmcpserver.model.StationToiletErrorCode;
-import com.example.tflmcpserver.model.StationToiletLookupRequest;
-import com.example.tflmcpserver.model.StationToiletToolResponse;
+import com.example.tflmcpserver.model.api.station.StationToiletErrorCode;
+import com.example.tflmcpserver.model.api.station.StationToiletLookupRequest;
+import com.example.tflmcpserver.model.api.station.StationToiletToolResponse;
 import io.github.resilience4j.ratelimiter.RateLimiter;
 import java.util.List;
 import org.junit.jupiter.api.Test;
