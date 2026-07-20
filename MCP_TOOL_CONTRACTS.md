@@ -10,7 +10,7 @@ Plans a London journey using TfL Journey Planner.
 Fields:
 - `from` (`String`, required): start location or stop code.
 - `to` (`String`, required): destination location or stop code.
-- `needAccessibleRoute` (`Boolean`, optional): accessibility preference flag for future routing extensions.
+- `needAccessibleRoute` (`Boolean`, optional): when `true`, requests TfL step-free routing to the vehicle and platform. When `false` or omitted, TfL's default accessibility preferences are used.
 
 ## Response Model
 `JourneyPlanToolResponse`
@@ -43,8 +43,8 @@ Fields:
 ## Notes
 - `TFL_API_KEY` is required at startup and must be provided via environment variable.
 - Secrets are never returned in tool response payloads.
-- `JourneyDisambiguationSuggestion` includes `parameterValue` (retry token) and `matchQuality`.
-- Disambiguation suggestions are sorted by `matchQuality` descending when provided by TfL.
+- `JourneyDisambiguationSuggestion` includes TfL's `parameterValue` retry token, `matchQuality`, `commonName`, `placeType`, `naptanId`, transport `modes`, `latitude`, and `longitude`.
+- Up to 10 disambiguation suggestions are returned, sorted by `matchQuality` descending when provided by TfL.
 
 ## Tool: `stationToilets`
 

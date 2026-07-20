@@ -180,7 +180,8 @@ public class TflStationDataClient {
 		if (!StringUtils.hasText(value)) {
 			return "";
 		}
-		String normalized = value.toLowerCase(Locale.ROOT).trim().replaceAll("\\s+", " ");
+		String normalized = value.toLowerCase(Locale.ROOT).replace("'", "").replace("\u2019", "").trim()
+				.replaceAll("\\s+", " ");
 		if (normalized.endsWith(" station")) {
 			return normalized.substring(0, normalized.length() - " station".length()).trim();
 		}

@@ -1,4 +1,4 @@
-package com.example.tflmcpserver.model;
+package com.example.tflmcpserver.model.api.station;
 
 import java.util.List;
 

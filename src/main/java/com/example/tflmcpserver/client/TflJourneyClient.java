@@ -11,6 +11,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Component
 public class TflJourneyClient {
 
+	private static final String ACCESSIBILITY_PREFERENCE = "StepFreeToVehicle,StepFreeToPlatform";
+
 	private final WebClient tflWebClient;
 	private final TflApiProperties tflApiProperties;
 
@@ -24,10 +26,14 @@ public class TflJourneyClient {
 			throw new IllegalArgumentException("Both 'from' and 'to' must be provided.");
 		}
 
-		return tflWebClient.get()
-				.uri(uriBuilder -> uriBuilder.path("/Journey/JourneyResults/{from}/to/{to}")
-						.queryParam("app_key", tflApiProperties.key()).build(request.from(), request.to()))
-				.retrieve().bodyToMono(TflItineraryResultWire.class)
+		return tflWebClient.get().uri(uriBuilder -> {
+			var builder = uriBuilder.path("/Journey/JourneyResults/{from}/to/{to}").queryParam("app_key",
+					tflApiProperties.key());
+			if (Boolean.TRUE.equals(request.needAccessibleRoute())) {
+				builder.queryParam("accessibilityPreference", ACCESSIBILITY_PREFERENCE);
+			}
+			return builder.build(request.from(), request.to());
+		}).retrieve().bodyToMono(TflItineraryResultWire.class)
 				.timeout(Duration.ofSeconds(tflApiProperties.timeoutSeconds())).blockOptional()
 				.orElseThrow(() -> new IllegalStateException("Empty response from TfL Journey API"));
 	}
