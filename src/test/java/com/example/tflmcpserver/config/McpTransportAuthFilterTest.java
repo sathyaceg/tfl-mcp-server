@@ -16,8 +16,7 @@ class McpTransportAuthFilterTest {
 
 	@Test
 	void allowsRequestWhenApiKeyMatches() throws ServletException, IOException {
-		McpTransportAuthProperties properties = new McpTransportAuthProperties(true, "X-MCP-API-KEY", "secret",
-				List.of("/mcp"));
+		McpTransportAuthProperties properties = authProperties();
 		McpTransportAuthFilter filter = new McpTransportAuthFilter(properties, Set.of("/mcp"));
 
 		MockHttpServletRequest request = new MockHttpServletRequest("POST", "/mcp");
@@ -31,8 +30,7 @@ class McpTransportAuthFilterTest {
 
 	@Test
 	void rejectsProtectedPathWhenApiKeyMissing() throws ServletException, IOException {
-		McpTransportAuthProperties properties = new McpTransportAuthProperties(true, "X-MCP-API-KEY", "secret",
-				List.of("/mcp"));
+		McpTransportAuthProperties properties = authProperties();
 		McpTransportAuthFilter filter = new McpTransportAuthFilter(properties, Set.of("/mcp"));
 
 		MockHttpServletRequest request = new MockHttpServletRequest("POST", "/mcp");
@@ -45,8 +43,7 @@ class McpTransportAuthFilterTest {
 
 	@Test
 	void bypassesAuthForNonMcpPath() throws ServletException, IOException {
-		McpTransportAuthProperties properties = new McpTransportAuthProperties(true, "X-MCP-API-KEY", "secret",
-				List.of("/mcp"));
+		McpTransportAuthProperties properties = authProperties();
 		McpTransportAuthFilter filter = new McpTransportAuthFilter(properties, Set.of("/mcp"));
 
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/health");
@@ -55,5 +52,9 @@ class McpTransportAuthFilterTest {
 		filter.doFilter(request, response, new MockFilterChain());
 
 		assertEquals(200, response.getStatus());
+	}
+
+	private McpTransportAuthProperties authProperties() {
+		return new McpTransportAuthProperties(true, "X-MCP-API-KEY", "secret", "pepper", List.of("/mcp"));
 	}
 }

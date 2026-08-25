@@ -23,15 +23,17 @@ class McpTransportAuthPropertiesTest {
 	@Test
 	void validPropertiesPassValidation() {
 		McpTransportAuthProperties properties = new McpTransportAuthProperties(true, "X-MCP-API-KEY", "secret",
-				List.of("/mcp"));
+				"pepper", List.of("/mcp"));
 
 		assertTrue(validator.validate(properties).isEmpty());
 		assertEquals("X-MCP-API-KEY", properties.headerName());
+		assertEquals("secret", properties.bootstrapApiKey());
+		assertEquals("pepper", properties.keyPepper());
 	}
 
 	@Test
 	void invalidPropertiesFailValidation() {
-		McpTransportAuthProperties properties = new McpTransportAuthProperties(true, "", "", List.of());
+		McpTransportAuthProperties properties = new McpTransportAuthProperties(true, "", "", "", List.of());
 
 		assertFalse(validator.validate(properties).isEmpty());
 	}

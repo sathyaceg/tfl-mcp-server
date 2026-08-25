@@ -17,8 +17,7 @@ class McpTransportSecurityConfigTest {
 
 	@Test
 	void registersAuthFilterWithOrderOne() {
-		McpTransportAuthProperties authProperties = new McpTransportAuthProperties(true, "X-MCP-API-KEY", "secret",
-				List.of("/mcp"));
+		McpTransportAuthProperties authProperties = authProperties();
 		McpTransportSecurityConfig config = new McpTransportSecurityConfig();
 
 		FilterRegistrationBean<McpTransportAuthFilter> registration = config
@@ -30,8 +29,7 @@ class McpTransportSecurityConfigTest {
 
 	@Test
 	void registeredFilterProtectsConfiguredPath() throws ServletException, IOException {
-		McpTransportAuthProperties authProperties = new McpTransportAuthProperties(true, "X-MCP-API-KEY", "secret",
-				List.of("/mcp"));
+		McpTransportAuthProperties authProperties = authProperties();
 		McpTransportSecurityConfig config = new McpTransportSecurityConfig();
 		McpTransportAuthFilter filter = config.mcpTransportAuthFilterRegistration(authProperties).getFilter();
 
@@ -41,5 +39,9 @@ class McpTransportSecurityConfigTest {
 		filter.doFilter(request, response, new MockFilterChain());
 
 		assertEquals(401, response.getStatus());
+	}
+
+	private McpTransportAuthProperties authProperties() {
+		return new McpTransportAuthProperties(true, "X-MCP-API-KEY", "secret", "pepper", List.of("/mcp"));
 	}
 }
