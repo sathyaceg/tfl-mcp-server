@@ -29,7 +29,7 @@ public class McpTransportAuthFilter extends OncePerRequestFilter {
 		}
 
 		String provided = request.getHeader(authProperties.headerName());
-		if (authProperties.apiKey().equals(provided)) {
+		if (authProperties.bootstrapApiKey().equals(provided)) {
 			filterChain.doFilter(request, response);
 			return;
 		}
